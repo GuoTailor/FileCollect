@@ -4,4 +4,26 @@
     <string name="no_read_phone_state_permission">没有读取用户数据的权限，请开启该权限</string>
     <string name="no_write_external_storage_permission">没有文件写权限，请开启该权限</string>
     <string name="no_read_external_storage_permission">没有文件读权限，请开启该权限</string>
+    <string name="search_hint">请输入要搜索的内容&#8230;</string>
+
+    <string name="paste">粘贴</string>
+    <string name="search">搜索</string>
+    <string name="home">首页目录</string>
+    <string name="sort">排序</string>
+    <string name="sortby">排序方式</string>
+    <string name="directorysort">目录排序方式</string>
+    <string name="history">历史记录</string>
+    <string name="hiddenfiles">已隐藏文件</string>
+    <string name="extract">提取</string>
+    <string name="exit">退出应用</string>
+    <string name="listview">列表视图</string>
+    <string name="gridview">网格视图</string>
+    <!--SortBy-->
+    <string name="sortName">名称</string>
+    <string name="lastModified">最后修改时间</string>
+    <string name="sortSize">大小</string>
+    <string name="type">类型</string>
+
+    <string name="ascending">升序排列</string>
+    <string name="descending">降序排列</string>
 </resources>

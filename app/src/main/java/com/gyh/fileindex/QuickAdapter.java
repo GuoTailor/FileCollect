@@ -4,7 +4,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,12 +19,20 @@ public abstract class QuickAdapter<T> extends RecyclerView.Adapter<QuickAdapter.
         this.mDatas = datas;
     }
 
+    public List<T> getmDatas() {
+        return mDatas;
+    }
+
+    public void setmDatas(List<T> mDatas) {
+        this.mDatas = mDatas;
+    }
+
     public abstract int getLayoutId(int viewType);
 
     @NotNull
     @Override
     public VH onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
-        View convertView = LayoutInflater.from(parent.getContext()).inflate( getLayoutId(viewType), parent, false);
+        View convertView = LayoutInflater.from(parent.getContext()).inflate(getLayoutId(viewType), parent, false);
         return new VH(convertView);
     }
 
@@ -63,7 +70,6 @@ public abstract class QuickAdapter<T> extends RecyclerView.Adapter<QuickAdapter.
             mConvertView = v;
             mViews = new SparseArray<>();
             v.setOnClickListener(v1 -> {
-                //Toast.makeText(mContext, "当前点击 "+ datas.get(getLayoutPosition()), Toast.LENGTH_SHORT).show();
                 if(onItemClickListener != null){
                     onItemClickListener.onItemClick(v1, mDatas.get(getLayoutPosition()), getLayoutPosition());
                 }
@@ -79,11 +85,6 @@ public abstract class QuickAdapter<T> extends RecyclerView.Adapter<QuickAdapter.
             return (V)v;
         }
 
-
-        public void setText(int id, String value){
-            TextView view = getView(id);
-            view.setText(value);
-        }
     }
 
     //点击 RecyclerView 某条的监听
