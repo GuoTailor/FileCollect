@@ -13,7 +13,11 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -30,6 +34,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
 import java.util.*
 import kotlin.Comparator
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
     lateinit var mData: MutableList<ApkInfo>
@@ -38,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var apkScan: ApkScan
     private lateinit var appbar: AppBar
     private var search: Boolean = false
+    private lateinit var btnAnim: Animation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,28 +62,21 @@ class MainActivity : AppCompatActivity() {
             quickAdapter.notifyItemRangeRemoved(0, previousSize)
             scan()
         }
-        if (!permissionCheck()) {
-            if (Build.VERSION.SDK_INT >= 23) {
-                ActivityCompat.requestPermissions(this, permissionManifest, PERMISSION_REQUEST_CODE)
-            } else {
-                showNoPermissionTip(getString(noPermissionTip[mNoPermissionIndex]))
-                finish()
-            }
-        }
 
+        btnAnim = AnimationUtils.loadAnimation(this, R.anim.rotate)
+        permissionCheck()
         appbar = AppBar(this) { queue ->
-            if (!queue.isEmpty()) {
+            if (queue.isNotEmpty()) {
                 val queueList = mData.filter { it.appName.contains(queue) }
                 quickAdapter.setmDatas(queueList)
                 quickAdapter.notifyItemRangeRemoved(0, mData.size)
                 search = true
             }
         }
-        val fabBgView = fab_bg
-        fabBgView.setBackgroundResource(R.drawable.fab_shadow_black)
+        fab_bg.setBackgroundResource(R.drawable.fab_shadow_black)
 
 
-        fabBgView.setOnClickListener { view -> if (appbar.searchView.isEnabled) appbar.searchView.hideSearchView() }
+        fab_bg.setOnClickListener { view -> if (appbar.searchView.isEnabled) appbar.searchView.hideSearchView() }
 
         setSupportActionBar(appbar.toolbar)
         mData = LinkedList()
@@ -92,34 +91,20 @@ class MainActivity : AppCompatActivity() {
                 holder.getView<ImageView>(R.id.img)?.setImageDrawable(data.icon)
                 holder.getView<TextView>(R.id.time)?.text = data.date
                 holder.getView<TextView>(R.id.version)?.text = "版本: " + data.version
+                holder.getView<TextView>(R.id.currentVersion)?.text = data.currentVersion
                 holder.getView<TextView>(R.id.size)?.text = data.size
             }
         }
-        quickAdapter.setOnItemClickListener { view, data, index ->
-            AlertDialog.Builder(context)
-                .setTitle("你确定要删除这个apk吗?")
-                .setIcon(data.icon)
-                .setMessage(data.path)
-                .setPositiveButton("删除") { dialog, _ ->
-                    File(data.path).delete()
-                    Log.d("DoLog", data.path + " > " + index)
-                    dialog.dismiss()
-                    mData.remove(data)
-                    quickAdapter.notifyItemRemoved(index)
-                }
-                .setNegativeButton("取消") { dialog, _ ->
-                    Log.d("DoLog", data.path)
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
-        }
+        initAdapter()
+        initRecyclerView()
+    }
+
+    private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
         //设置布局管理器
         recyclerView.layoutManager = layoutManager
         //设置为垂直布局，这也是默认的
         layoutManager.orientation = RecyclerView.VERTICAL
-        initAdapter()
         //设置Adapter
         recyclerView.adapter = quickAdapter
         //设置分隔线
@@ -132,6 +117,16 @@ class MainActivity : AppCompatActivity() {
         //设置增加或删除条目的动画
         recyclerView.itemAnimator = DefaultItemAnimator()
         scan()
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && fab.visibility == VISIBLE) {
+                    fab.hide()
+                } else if (dy < 0 && fab.visibility != VISIBLE) {
+                    fab.show()
+                }
+            }
+        })
     }
 
     private fun initAdapter() {
@@ -171,6 +166,7 @@ class MainActivity : AppCompatActivity() {
                 if (direction == SwipeRecyclerView.RIGHT_DIRECTION) {
                     when (menuPosition) {
                         0 -> {
+                            Util.install(File(mData[position].path), this)
                         }
                         1 -> {
                             val apkInfo = mData[position]
@@ -186,23 +182,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.setOnItemMenuClickListener(mMenuItemClickListener)
         recyclerView.setOnItemLongClickListener { view, position ->
             val data = mData[position]
-            AlertDialog.Builder(context)
-                .setTitle("你确定要删除这个文件吗?")
-                .setIcon(data.icon)
-                .setMessage(data.path)
-                .setPositiveButton("删除") { dialog, _ ->
-                    File(data.path).delete()
-                    Log.d("DoLog", data.path + " > " + position)
-                    dialog.dismiss()
-                    mData.remove(data)
-                    quickAdapter.notifyItemRemoved(position)
-                }
-                .setNegativeButton("取消") { dialog, _ ->
-                    Log.d("DoLog", data.path)
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
+            Util.showPropertiesDialog(data, this)
         }
     }
 
@@ -221,8 +201,12 @@ class MainActivity : AppCompatActivity() {
                 }
             })
             quickAdapter.notifyItemInserted(mData.indexOf(it))
-        }, { Toast.makeText(this, it + mData.size, Toast.LENGTH_SHORT).show() }, this)
+        }, {
+            Toast.makeText(this, it + mData.size, Toast.LENGTH_SHORT).show()
+            fab.clearAnimation()
+        }, this)
         apkScan.execute(".apk")
+        fab.startAnimation(btnAnim)
     }
 
     override fun onBackPressed() {
@@ -230,6 +214,9 @@ class MainActivity : AppCompatActivity() {
             quickAdapter.setmDatas(mData)
             quickAdapter.notifyItemRangeRemoved(0, mData.size)
             search = false
+        } else {
+            finish()
+            exitProcess(0)
         }
     }
 
@@ -245,7 +232,6 @@ class MainActivity : AppCompatActivity() {
         s.title = resources.getString(R.string.gridview)
         //s.title = resources.getString(R.string.listview)
         menu.findItem(R.id.search).isVisible = true
-        menu.findItem(R.id.home).isVisible = true
         menu.findItem(R.id.sort).isVisible = true
         menu.findItem(R.id.view).isVisible = true
 
@@ -258,15 +244,15 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.search -> {
-                appbar.getSearchView().revealSearchView()
+                appbar.searchView.revealSearchView()
                 true
             }
             R.id.exit -> {
                 finish()
                 true
             }
-            R.id.sortby -> {
-                val sort = getResources().getStringArray(R.array.sortby)
+            R.id.sort -> {
+                val sort = resources.getStringArray(R.array.sortby)
                 val current = 1
                 val a = MaterialDialog.Builder(this)
                 a.items(*sort).itemsCallbackSingleChoice(
@@ -328,7 +314,7 @@ class MainActivity : AppCompatActivity() {
         R.string.no_read_external_storage_permission
     )
 
-    private fun permissionCheck(): Boolean {
+    private fun permissionCheck() {
         var permissionCheck = PackageManager.PERMISSION_GRANTED
         var permission: String
         for (i in permissionManifest.indices) {
@@ -342,7 +328,14 @@ class MainActivity : AppCompatActivity() {
                 permissionCheck = PackageManager.PERMISSION_DENIED
             }
         }
-        return permissionCheck == PackageManager.PERMISSION_GRANTED
+        if(permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= 23) {
+                ActivityCompat.requestPermissions(this, permissionManifest, PERMISSION_REQUEST_CODE)
+            } else {
+                showNoPermissionTip(getString(noPermissionTip[mNoPermissionIndex]))
+                finish()
+            }
+        }
     }
 
     private fun showNoPermissionTip(tip: String) {

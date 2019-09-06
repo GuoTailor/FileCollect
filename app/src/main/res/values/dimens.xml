@@ -9,4 +9,13 @@
     <dimen name="dp_60">60dp</dimen>
     <dimen name="dp_10">10dp</dimen>
     <dimen name="dp_2">2dp</dimen>
+
+    <dimen name="spacebetweenitems_properties_dialog">10dp</dimen>
+    <dimen name="material_generic">16dp</dimen>
+    <dimen name="material_generic_medium">32dp</dimen>
+    <dimen name="material_generic_large">72dp</dimen>
+    <dimen name="material_generic_card_elevation">4dp</dimen>
+    <dimen name="material_generic_title">16sp</dimen>
+    <dimen name="material_generic_title_summary">12sp</dimen>
+    <dimen name="material_generic_list_item">72dp</dimen>
 </resources>

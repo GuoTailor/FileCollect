@@ -53,7 +53,7 @@ class ApkScan(
      * @param context
      */
     fun apkInfo(file: File): ApkInfo {
-        val pm = context.getPackageManager()
+        val pm = context.packageManager
         val pkgInfo = pm.getPackageArchiveInfo(file.absolutePath, PackageManager.GET_ACTIVITIES)
         val apkInfo = ApkInfo(path = file.absolutePath)
         if (pkgInfo != null) {
@@ -65,11 +65,16 @@ class ApkScan(
             apkInfo.appName = pm.getApplicationLabel(appInfo).toString()// 得到应用名
             apkInfo.packageName = appInfo.packageName // 得到包名
             apkInfo.version = pkgInfo.versionName // 得到版本信息
+            try {
+                apkInfo.currentVersion = "已安装：" +
+                    pm.getPackageInfo(appInfo.packageName, PackageManager.GET_ACTIVITIES).versionName
+            } catch (e: PackageManager.NameNotFoundException) { }
             /* icon1和icon2其实是一样的 */
             apkInfo.icon = pm.getApplicationIcon(appInfo)// 得到图标信息
             //val icon2 = appInfo.loadIcon(pm)
         }
-        apkInfo.date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(file.lastModified())
+        apkInfo.date =
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(file.lastModified())
         apkInfo.size = Util.getNetFileSizeDescription(file.length())
         return apkInfo
     }

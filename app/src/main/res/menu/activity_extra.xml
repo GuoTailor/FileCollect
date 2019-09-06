@@ -20,32 +20,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/paste"
-        android:title="@string/paste"
-        android:icon="@drawable/ic_content_paste_white_24dp"
-        app:showAsAction="ifRoom|withText"
-        android:visible="false" />
-    <item
         android:id="@+id/search"
         android:title="@string/search"
         android:icon="@drawable/ic_search_white_24dp"
         app:showAsAction="always" />
-    <item android:id="@+id/home"
-        android:title="@string/home"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_home_white_24dp"/>
     <item
-        app:showAsAction="ifRoom"
         android:id="@+id/sort"
         android:title="@string/sort"
         android:icon="@drawable/ic_sort_white_24dp">
-        <menu >
-            <item android:title="@string/sortby"
-                android:id="@+id/sortby"/>
-            <item android:title="@string/directorysort"
-                android:id="@+id/dsort"/>
-        </menu>
-
     </item>
     <item
         android:id="@+id/view"

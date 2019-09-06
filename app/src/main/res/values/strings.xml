@@ -15,6 +15,7 @@
     <string name="history">历史记录</string>
     <string name="hiddenfiles">已隐藏文件</string>
     <string name="extract">提取</string>
+    <string name="ok">确定</string>
     <string name="exit">退出应用</string>
     <string name="listview">列表视图</string>
     <string name="gridview">网格视图</string>
@@ -26,4 +27,18 @@
 
     <string name="ascending">升序排列</string>
     <string name="descending">降序排列</string>
+
+    <string name="name">包名</string>
+    <string name="apk_name">应用名</string>
+    <string name="calculating">正在计算</string>
+    <string name="date">日期</string>
+    <string name="location">路径</string>
+    <string name="size_capitalized">大小</string>
+    <string name="size">文件夹大小</string>
+    <string name="version">版本</string>
+    <string name="current_version">已安装版本</string>
+    <string name="properties">属性</string>
+
+    <string name="clipboard_path_copy">路径已复制到剪切板</string>
+    <string name="properties_copied_clipboard">已复制到剪切板</string>
 </resources>
