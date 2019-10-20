@@ -16,8 +16,8 @@ public class ThreadManager {
      * 私有化构造函数，使用单列模式
      */
     private ThreadManager() {
-        executorService = new ThreadPoolExecutor(8, 8,
-                0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(256), (run, executor) -> {
+        executorService = new ThreadPoolExecutor(2, 4,
+                3L, TimeUnit.MINUTES, new LinkedBlockingQueue<>(1), (run, executor) -> {
             if (!executor.isShutdown()) {
                 try {
                     executor.getQueue().put(run);

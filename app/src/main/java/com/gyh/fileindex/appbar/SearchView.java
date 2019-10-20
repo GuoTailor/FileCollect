@@ -2,6 +2,7 @@ package com.gyh.fileindex.appbar;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -11,10 +12,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-
 import androidx.appcompat.widget.AppCompatEditText;
 
-import com.gyh.fileindex.MainActivity;
 import com.gyh.fileindex.R;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
@@ -29,9 +28,9 @@ import static android.os.Build.VERSION.SDK_INT;
 
 public class SearchView {
 
-    private MainActivity mainActivity;
+    private SmokeScreen mainActivity;
     private AppBar appbar;
-
+    private Activity activity;
     private RelativeLayout searchViewLayout;
     private AppCompatEditText searchViewEditText;
     private ImageView clearImageView;
@@ -39,14 +38,14 @@ public class SearchView {
 
     private boolean enabled = false;
 
-    public SearchView(final AppBar appbar, final MainActivity a, final SearchListener searchListener) {
+    public SearchView(final AppBar appbar, final Activity activity, final SmokeScreen a, final SearchListener searchListener) {
         mainActivity = a;
         this.appbar = appbar;
-
-        searchViewLayout = a.findViewById(R.id.search_view);
-        searchViewEditText = a.findViewById(R.id.search_edit_text);
-        clearImageView = a.findViewById(R.id.search_close_btn);
-        backImageView = a.findViewById(R.id.img_view_back);
+        this.activity = activity;
+        searchViewLayout = activity.findViewById(R.id.search_view);
+        searchViewEditText = activity.findViewById(R.id.search_edit_text);
+        clearImageView = activity.findViewById(R.id.search_close_btn);
+        backImageView = activity.findViewById(R.id.img_view_back);
 
         clearImageView.setOnClickListener(v -> searchViewEditText.setText(""));
 
@@ -98,7 +97,7 @@ public class SearchView {
             @Override
             public void onAnimationEnd(Animator animation) {
                 searchViewEditText.requestFocus();
-                InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(searchViewEditText, InputMethodManager.SHOW_IMPLICIT);
                 enabled = true;
             }
@@ -143,7 +142,7 @@ public class SearchView {
             public void onAnimationEnd(Animator animation) {
                 searchViewLayout.setVisibility(View.GONE);
                 enabled = false;
-                InputMethodManager inputMethodManager = (InputMethodManager) mainActivity.getSystemService(INPUT_METHOD_SERVICE);
+                InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(searchViewEditText.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
             }
 

@@ -1,5 +1,6 @@
 package com.gyh.fileindex
 
+import com.gyh.fileindex.util.ThreadManager
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +13,13 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        val threadPool = ThreadManager.getInstance()
+        for (i in 1..7) {
+            threadPool.execute {
+                println("nmka$i")
+                Thread.sleep(10_000)
+            }
+            println("end$i")
+        }
     }
 }

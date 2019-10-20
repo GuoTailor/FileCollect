@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FileCollect</string>
+    <string name="app_name">File Collect</string>
     <string name="action_settings">Settings</string>
     <string name="no_read_phone_state_permission">没有读取用户数据的权限，请开启该权限</string>
     <string name="no_write_external_storage_permission">没有文件写权限，请开启该权限</string>
@@ -38,7 +38,38 @@
     <string name="version">版本</string>
     <string name="current_version">已安装版本</string>
     <string name="properties">属性</string>
+    <string name="hash_sha256">SHA-256</string>
+    <string name="md5">MD5</string>
 
     <string name="clipboard_path_copy">路径已复制到剪切板</string>
     <string name="properties_copied_clipboard">已复制到剪切板</string>
+
+    <string name="noitems">无项目</string>
+    <string name="item">项目</string>
+    <string name="items">个项目</string>
+
+    <string name="byte_singular">字节</string>
+    <string name="bytes">字节</string>
+    <string name="loading">正在载入&#8230;</string>
+    <string name="used">已用空间</string>
+    <string name="used_by_others">已被其他人使用</string>
+    <string name="free">剩余空间</string>
+    <string name="total">总计：</string>
+    <string name="error">错误</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>
