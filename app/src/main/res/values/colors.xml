@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
     <color name="text_Grey">#c1c1c2</color>
     <color name="colorWhite">#ffffff</color>
+
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#e0e0e0</color>
+    <color name="colorAccent">#607d8b</color>
+    <color name="textColorPrimary">#dd000000</color>
+    <color name="textColorSecondary">#89000000</color>
 
     <color name="text_color">#333333</color>
 
@@ -27,4 +30,5 @@
     <color name="piechart_red">#FFEF5350</color>
     <color name="piechart_green">#FF4CAF50</color>
     <color name="piechart_blue">#FF2196F3</color>
+    <color name="zt">#008577</color>
 </resources>

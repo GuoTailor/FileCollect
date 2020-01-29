@@ -53,10 +53,10 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
             data.add(it[0])
             val index = data.indexOf(it[0])
             quickAdapter.notifyItemInserted(index)
-        }, ::updateResult, { task, _ ->
+        }, ::updateResult, {
             val mData = ArrayList(tabInfo.fileInfos)
             for (file in mData) {
-                task.updateProgress(ApkInfo(file))
+                updateProgress(ApkInfo(file))
             }
         })
         converting?.executeOnExecutor(ThreadManager.getInstance().executorService)

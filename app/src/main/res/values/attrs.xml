@@ -31,4 +31,5 @@
         <attr name="animationDuration" format="integer" />
         <attr name="currentPageIndicatorColor" format="color" />
     </declare-styleable>
+
 </resources>

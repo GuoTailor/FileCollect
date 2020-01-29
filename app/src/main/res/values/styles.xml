@@ -1,10 +1,37 @@
 <resources>
+    <style name="Base.TextAppearance.Shrine.Logo" parent="TextAppearance.AppCompat.Display3">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Shrine.Logo" parent="Base.TextAppearance.Shrine.Logo"/>
+    <style name="Widget.Shrine.Toolbar.Logo" parent="Base.Widget.Shrine.Toolbar.Logo" />
+    <style name="Base.Widget.Shrine.Toolbar.Logo" parent="Widget.Shrine.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.Shrine.Logo</item>
+    </style>
+    <style name="Widget.Shrine.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/shrine_toolbar_collapsed_height</item>
+        <item name="android:minHeight">@dimen/shrine_toolbar_collapsed_height</item>
+    </style>
+
+    <style name="Theme.Shrine" parent="Base.Theme.Shrine"/>
+
+    <style name="Base.Theme.Shrine" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="toolbarStyle">@style/Widget.Shrine.Toolbar.Logo</item>
+    </style>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">@color/holo_dark_action_mode</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 

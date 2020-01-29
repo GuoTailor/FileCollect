@@ -41,6 +41,7 @@ public class GenerateHashesTask extends AsyncTask<Void, String, String[]> {
 
         mMD5LinearLayout = view.findViewById(R.id.properties_dialog_md5);
         mSHA256LinearLayout = view.findViewById(R.id.properties_dialog_sha256);
+
     }
 
     @Override

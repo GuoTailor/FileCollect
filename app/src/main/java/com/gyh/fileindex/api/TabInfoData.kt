@@ -2,10 +2,9 @@ package com.gyh.fileindex.api
 
 import android.os.AsyncTask
 import androidx.annotation.UiThread
-import com.gyh.fileindex.util.ThreadManager
 import com.gyh.fileindex.bean.TabInfo
+import com.gyh.fileindex.util.ThreadManager
 import java.io.File
-import java.lang.IllegalStateException
 import java.util.*
 import kotlin.collections.ArrayList
 

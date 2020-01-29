@@ -1,10 +1,20 @@
 <resources>
+    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="shrine_product_description">
+    离开隧道，雨正在下，当你等待的时候，奇妙的事情发生了
+    </string>
     <string name="app_name">File Collect</string>
     <string name="action_settings">Settings</string>
     <string name="no_read_phone_state_permission">没有读取用户数据的权限，请开启该权限</string>
     <string name="no_write_external_storage_permission">没有文件写权限，请开启该权限</string>
     <string name="no_read_external_storage_permission">没有文件读权限，请开启该权限</string>
     <string name="search_hint">请输入要搜索的内容&#8230;</string>
+    <string name="shrine_product_category">Best Gifts for Teen Girls</string>
+    <string name="shrine_icon_search_title">Search</string>
+    <string name="shrine_icon_filter_title">Filter</string>
+    <string name="shrine_bottom_nav_favorites">Favorites</string>
+    <string name="shrine_bottom_nav_home">Home</string>
+    <string name="shrine_bottom_nav_cart">Cart</string>
 
     <string name="paste">粘贴</string>
     <string name="search">搜索</string>
@@ -57,6 +67,8 @@
     <string name="total">总计：</string>
     <string name="error">错误</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="shrine_filter_page_title">Filters</string>
+    <string name="title">设置</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

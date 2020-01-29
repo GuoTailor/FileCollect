@@ -1,19 +1,26 @@
 package com.gyh.fileindex.ui
 
 import android.Manifest
+import android.annotation.TargetApi
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
+import com.gyh.fileindex.SettingsActivity
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.TabInfo
@@ -21,11 +28,11 @@ import com.gyh.fileindex.util.Util
 import kotlinx.android.synthetic.main.activity_main_tab.*
 import java.io.File
 
-class MainTabActivity : AppCompatActivity(), Monitor {
-
+class NewMainTabActivity : AppCompatActivity(), Monitor {
     private lateinit var quickAdapter: QuickAdapter<TabInfo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Shrine)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_tab)
         TabInfoData.data = listOf(
@@ -72,9 +79,10 @@ class MainTabActivity : AppCompatActivity(), Monitor {
                 TabInfoData.ppt
             )
         )
-        initRecyclerView()
+        initCollapsingToolbar()
+        initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
-        permissionCheck()
+        Util.showMainDialog(this, mainChart)
         val status = TabInfoData.scan()
         if (status == TabInfoData.Status.RUNNING) Toast.makeText(
             this,
@@ -84,7 +92,26 @@ class MainTabActivity : AppCompatActivity(), Monitor {
         TabInfoData.addListener(this)
     }
 
-    private fun initRecyclerView() {
+    private fun initCollapsingToolbar() {
+        val toolbar = findViewById<Toolbar>(R.id.AppBar)
+        val collapsingToolbarImage = findViewById<View>(R.id.CollapsingToolbarImage)
+        setSupportActionBar(toolbar)
+        val collapsingToolbarLayout =
+            findViewById<CollapsingToolbarLayout>(R.id.CollapsingToolbarLayout)
+        collapsingToolbarLayout.title = toolbar.title
+        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Shrine_Logo)
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Shrine_Logo)
+        val windowSize = Point()
+        windowManager.defaultDisplay.getSize(windowSize)
+        val windowWidth = windowSize.x
+        collapsingToolbarImage.x = collapsingToolbarImage.x - windowWidth / 4
+        collapsingToolbarLayout.scrimVisibleHeightTrigger =
+            resources.getDimension(R.dimen.shrine_tall_toolbar_height).toInt() / 2
+    }
+
+    private fun initItemGrid() {
+        ProductGrid.setHasFixedSize(true)
+        ProductGrid.layoutManager = GridLayoutManager(this, 2)
         quickAdapter = object : QuickAdapter<TabInfo>(TabInfoData.data) {
 
             override fun getLayoutId(viewType: Int): Int {
@@ -125,7 +152,7 @@ class MainTabActivity : AppCompatActivity(), Monitor {
                 }
             }
         }
-        //recyclerTabView.adapter = quickAdapter
+        ProductGrid.adapter = quickAdapter
     }
 
     override fun onRequestPermissionsResult(
@@ -155,48 +182,22 @@ class MainTabActivity : AppCompatActivity(), Monitor {
         }
     }
 
-    override fun updateResult(result: String) = Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
-
     override fun isCare(file: File) = true
 
-    private var mNoPermissionIndex = 0
-    private val PERMISSION_REQUEST_CODE = 1
-    private val permissionManifest = arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
+    override fun updateResult(result: String) = Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
 
-    private val noPermissionTip = intArrayOf(
-        R.string.no_read_phone_state_permission,
-        R.string.no_write_external_storage_permission,
-        R.string.no_read_external_storage_permission
-    )
-
-    private fun permissionCheck() {
-        var permissionCheck = PackageManager.PERMISSION_GRANTED
-        var permission: String
-        for (i in permissionManifest.indices) {
-            permission = permissionManifest[i]
-            mNoPermissionIndex = i
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    permission
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionCheck = PackageManager.PERMISSION_DENIED
-            }
-        }
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= 23) {
-                ActivityCompat.requestPermissions(this, permissionManifest, PERMISSION_REQUEST_CODE)
-            } else {
-                showNoPermissionTip(getString(noPermissionTip[mNoPermissionIndex]))
-                finish()
-            }
-        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.shrine_toolbar_menu, menu)
+        return true
     }
 
-    private fun showNoPermissionTip(tip: String) {
-        Toast.makeText(this, tip, Toast.LENGTH_LONG).show()
+    override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
+        if (menuItem.itemId == R.id.ShrineToolbarFilterIcon) {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            return true
+        }
+        return false
     }
+
 }

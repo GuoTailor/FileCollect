@@ -83,7 +83,7 @@ public abstract class QuickAdapter<T> extends RecyclerView.Adapter<QuickAdapter.
             mViews = new SparseArray<>();
             v.setOnClickListener(v1 -> {
                 if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(v1, mDatas.get(getLayoutPosition()), getLayoutPosition());
+                    onItemClickListener.onItemClick(v1, getLayoutPosition());
                 }
             });
         }
@@ -106,9 +106,8 @@ public abstract class QuickAdapter<T> extends RecyclerView.Adapter<QuickAdapter.
          * 当RecyclerView某个被点击的时候回调
          *
          * @param view 点击item的视图
-         * @param data 点击得到的数据
          */
-        void onItemClick(View view, K data, int index);
+        void onItemClick(View view, int index);
 
     }
 

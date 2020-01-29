@@ -18,4 +18,31 @@
     <dimen name="material_generic_title">16sp</dimen>
     <dimen name="material_generic_title_summary">12sp</dimen>
     <dimen name="material_generic_list_item">72dp</dimen>
+
+    <dimen name="shrine_standard_spacing">16dp</dimen>
+    <dimen name="shrine_small_spacing">8dp</dimen>
+    <dimen name="shrine_large_spacing">36dp</dimen>
+    <dimen name="shrine_toolbar_collapsed_height">72dp</dimen>
+    <dimen name="shrine_toolbar_elevation">4dp</dimen>
+    <dimen name="shrine_bottom_nav_view_elevation">16dp</dimen>
+    <dimen name="shrine_bottom_nav_view_height">56dp</dimen>
+    <dimen name="shrine_bottom_nav_view_height_with_standard_spacing">72dp</dimen>
+    <dimen name="shrine_toolbar_subtitle_offset_top">232dp</dimen>
+    <dimen name="shrine_toolbar_subtitle_offset_start">124dp</dimen>
+    <dimen name="launchscreens_product_logo_bottom">16dp</dimen>
+
+    <dimen name="shrine_tall_toolbar_height">474dp</dimen>
+    <dimen name="shrine_toolbar_image_offset_top">48dp</dimen>
+    <dimen name="shrine_toolbar_offset_start">124dp</dimen>
+    <dimen name="shrine_toolbar_offset_top">124dp</dimen>
+    <dimen name="shrine_card_inner_padding">8dp</dimen>
+    <dimen name="shrine_grid_item_margin">4dp</dimen>
+    <dimen name="shrine_grid_outer_margin">12dp</dimen>
+    <dimen name="shrine_grid_image_height">200dp</dimen>
+    <dimen name="shrine_item_image_height">292dp</dimen>
+    <dimen name="shrine_item_product_title_size">30sp</dimen>
+    <dimen name="shrine_large_margin_start">56dp</dimen>
+    <dimen name="shrine_spinner_width">212dp</dimen>
+    <dimen name="shrine_spinner_height">48dp</dimen>
+    <dimen name="shrine_spinner_border_width">2dp</dimen>
 </resources>

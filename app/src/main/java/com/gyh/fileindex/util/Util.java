@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.text.SpannableString;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +26,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.gyh.fileindex.R;
@@ -35,6 +40,10 @@ import com.gyh.fileindex.bean.FileInfo;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static androidx.core.content.ContextCompat.getColor;
 
 public class Util {
     public static final double GB = 1024 * 1024 * 1024;
@@ -117,6 +126,12 @@ public class Util {
     }
 
 
+    /**
+     * 显示apk详情弹窗
+     *
+     * @param baseFile apkinfo
+     * @param activity activity
+     */
     public static void showPropertiesDialog(final ApkInfo baseFile, Activity activity) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(activity);
         builder.title(activity.getString(R.string.properties));
@@ -125,7 +140,7 @@ public class Util {
         }
         View v = activity.getLayoutInflater().inflate(R.layout.properties_dialog, null);
         TextView itemsText = v.findViewById(R.id.t7);
-        int accentColor = activity.getResources().getColor(R.color.colorPrimary, null);
+        int accentColor = activity.getResources().getColor(R.color.zt, null);
 
         {
             TextView mNameTitle = v.findViewById(R.id.title_name);
@@ -221,6 +236,12 @@ public class Util {
 
     }
 
+    /**
+     * 显示文件详情弹窗
+     *
+     * @param baseFile apkinfo
+     * @param activity activity
+     */
     public static void showPropertiesDialog(final FileInfo baseFile, Activity activity) {
         final ThreadManager executor = ThreadManager.getInstance();
 
@@ -231,7 +252,7 @@ public class Util {
 
         View v = activity.getLayoutInflater().inflate(R.layout.properties_dialog_file_info, null);
         TextView itemsText = v.findViewById(R.id.t7);
-        int accentColor = activity.getResources().getColor(R.color.colorPrimary, null);
+        int accentColor = activity.getResources().getColor(R.color.zt, null);
 
         /*View setup*/
         {
@@ -334,6 +355,56 @@ public class Util {
         materialDialog.getActionButton(DialogAction.NEGATIVE).setEnabled(false);
     }
 
+    /**
+     * 显示内存空余详情
+     *
+     * @param activity activity
+     */
+    public static void showMainDialog(Activity activity, PieChart chart) {
+        chart.setTouchEnabled(false);
+        chart.setDrawEntryLabels(false);
+        chart.setDescription(null);
+        chart.setNoDataText(activity.getString(R.string.loading));
+        chart.setRotationAngle(0f);
+        chart.setHoleColor(Color.TRANSPARENT);
+
+        chart.getLegend().setEnabled(true);
+        chart.getLegend().setForm(Legend.LegendForm.CIRCLE);
+        chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        chart.getLegend().setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        chart.animateY(1000);
+
+        chart.invalidate();
+        File file = Environment.getExternalStorageDirectory();
+        final long totalSpace = file.getTotalSpace();
+        long freeSpace = file.getFreeSpace();
+        long usedByOther = totalSpace - freeSpace;
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(usedByOther, activity.getString(R.string.used_by_others)));
+        entries.add(new PieEntry(freeSpace, activity.getString(R.string.free)));
+
+        PieDataSet set = new PieDataSet(entries, null);
+        set.setColors(getColor(activity, R.color.piechart_blue),
+                getColor(activity, R.color.piechart_green));
+        set.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        set.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        set.setSliceSpace(5f);
+        set.setAutomaticallyDisableSliceSpacing(true);
+        set.setValueLinePart2Length(0.5f);
+        set.setValueTextSize(12f);
+        set.setSelectionShift(1f);
+
+        PieData pieData = new PieData(set);
+        pieData.setValueFormatter(new SizeFormatter(activity));
+
+        chart.setCenterText(new SpannableString(activity.getString(R.string.total) + "\n" +
+                Formatter.formatFileSize(activity, totalSpace)));
+        chart.setData(pieData);
+
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+    }
+
     public static class SizeFormatter extends ValueFormatter {
 
         private Context context;
@@ -343,12 +414,8 @@ public class Util {
         }
 
         @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex,
-                                        ViewPortHandler viewPortHandler) {
-            String prefix = entry.getData() != null && entry.getData() instanceof String ?
-                    (String) entry.getData() : "";
-
-            return prefix + Formatter.formatFileSize(context, (long) value);
+        public String getFormattedValue(float value) {
+            return Formatter.formatFileSize(context, (long) value);
         }
     }
 
@@ -457,37 +524,66 @@ public class Util {
         return type;
     }
 
+    /**
+     * 根据后缀获取文件MIME
+     *
+     * @param index 文件后缀
+     * @return 文件的MIME类型
+     */
+    public static String getMIME(String index) {
+        for (String[] s : MIME_MapTable) {
+            if (s[0].equals(index)) {
+                return s[1];
+            }
+        }
+        return "*/*";
+    }
+
     private static final String[][] MIME_MapTable = {
             // {后缀名，MIME类型}
-            {".3gp", "video/3gpp"},
+            {".aac", "audio/aac"},
+            {".abw", "application/x-abiword"},
             {".apk", "application/vnd.android.package-archive"},
             {".asf", "video/x-ms-asf"},
+            {".arc", "application/x-freearc"},
             {".avi", "video/x-msvideo"},
+            {".azw", "application/vnd.amazon.ebook"},
             {".bin", "application/octet-stream"},
             {".bmp", "image/bmp"},
+            {".bz", "application/x-bzip"},
+            {".bz2", "application/x-bzip2"},
+            {".csh", "application/x-csh"},
+            {".css", "text/css"},
+            {".csv", "text/csv"},
             {".c", "text/plain"},
             {".class", "application/octet-stream"},
             {".conf", "text/plain"},
             {".cpp", "text/plain"},
             {".doc", "application/msword"},
-            {".docx",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
-            {".xls", "application/vnd.ms-excel"},
-            {".xlsx",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+            {".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+            {".eot", "application/vnd.ms-fontobject"},
             {".exe", "application/octet-stream"},
+            {".epub", "application/epub+zip"},
             {".gif", "image/gif"},
             {".gtar", "application/x-gtar"},
             {".gz", "application/x-gzip"},
             {".h", "text/plain"},
             {".htm", "text/html"},
             {".html", "text/html"},
+            {".ico", "image/vnd.microsoft.icon"},
+            {".ics", "text/calendar"},
             {".jar", "application/java-archive"},
             {".java", "text/plain"},
             {".jpeg", "image/jpeg"},
             {".jpg", "image/jpeg"},
-            {".js", "application/x-javascript"},
+            {".js", "text/javascript"},
+            {".json", "application/json"},
+            {".jsonld", "application/ld+json"},
             {".log", "text/plain"},
+            {".midi", "audio/x-midi"},
+            {".mid", "audio/midi"},
+            {".mjs", "text/javascript"},
+            {".mp3", "audio/mpeg"},
             {".m3u", "audio/x-mpegurl"},
             {".m4a", "audio/mp4a-latm"},
             {".m4b", "audio/mp4a-latm"},
@@ -500,34 +596,60 @@ public class Util {
             {".mp4", "video/mp4"},
             {".mpc", "application/vnd.mpohun.certificate"},
             {".mpe", "video/mpeg"},
-            {".mpeg", "video/mpeg"},
             {".mpg", "video/mpeg"},
+            {".mpeg", "video/mpeg"},
             {".mpg4", "video/mp4"},
             {".mpga", "audio/mpeg"},
             {".msg", "application/vnd.ms-outlook"},
+            {".mpkg", "application/vnd.apple.installer+xml"},
             {".ogg", "audio/ogg"},
-            {".pdf", "application/pdf"},
+            {".odp", "application/vnd.oasis.opendocument.presentation"},
+            {".ods", "application/vnd.oasis.opendocument.spreadsheet"},
+            {".odt", "application/vnd.oasis.opendocument.text"},
+            {".oga", "audio/ogg"},
+            {".ogv", "video/ogg"},
+            {".ogx", "application/ogg"},
+            {".otf", "font/otf"},
             {".png", "image/png"},
+            {".pdf", "application/pdf"},
             {".pps", "application/vnd.ms-powerpoint"},
             {".ppt", "application/vnd.ms-powerpoint"},
-            {".pptx",
-                    "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
+            {".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
             {".prop", "text/plain"},
+            {".rar", "application/x-rar-compressed"},
             {".rc", "text/plain"},
             {".rmvb", "audio/x-pn-realaudio"},
             {".rtf", "application/rtf"},
-            {".sh", "text/plain"},
+            {".sh", "application/x-sh"},
+            {".svg", "image/svg+xml"},
+            {".swf", "application/x-shockwave-flash"},
             {".tar", "application/x-tar"},
             {".tgz", "application/x-compressed"},
+            {".tif", "image/tiff"},
+            {".tiff", "image/tiff"},
+            {".ttf", "font/ttf"},
             {".txt", "text/plain"},
-            {".wav", "audio/x-wav"},
+            {".vsd", "application/vnd.visio"},
+            {".wav", "audio/wav"},
+            {".weba", "audio/webm"},
+            {".webm", "video/webm"},
+            {".webp", "image/webp"},
             {".wma", "audio/x-ms-wma"},
-            {".wmv", "audio/x-ms-wmv"},
             {".wps", "application/vnd.ms-works"},
-            {".xml", "text/plain"},
+            {".woff", "font/woff"},
+            {".woff2", "font/woff2"},
+            {".xhtml", "application/xhtml+xml"},
+            {".xls", "application/vnd.ms-excel"},
+            {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+            {".xml", "text/xml"},
+            {".xul", "application/vnd.mozilla.xul+xml"},
             {".z", "application/x-compress"},
-            {".zip", "application/x-zip-compressed"},
-            {"", "*/*"}
+            {".zip", "application/zip"},
+            {".rar", "application/x-rar-compressed"},
+            {".3gp", "video/3gpp"},
+            {".3g2", "video/3gpp2"},
+            {".7z", "application/x-7z-compressed"},
+            {"", "*/*"},
     };
 
 }

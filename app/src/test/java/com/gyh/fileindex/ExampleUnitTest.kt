@@ -13,13 +13,6 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        val threadPool = ThreadManager.getInstance()
-        for (i in 1..7) {
-            threadPool.execute {
-                println("nmka$i")
-                Thread.sleep(10_000)
-            }
-            println("end$i")
-        }
+        print(2 / 0)
     }
 }

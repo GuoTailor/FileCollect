@@ -8,7 +8,6 @@ import com.gyh.fileindex.R
 import com.gyh.fileindex.api.AsynchronizedTask
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.TabInfoData
-import com.gyh.fileindex.bean.ApkInfo
 import com.gyh.fileindex.bean.FileInfo
 import com.gyh.fileindex.util.ThreadManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -59,10 +58,10 @@ class FileListActivity : BaseActivity<FileInfo>(), Monitor {
             data.add(it[0])
             val index = data.indexOf(it[0])
             quickAdapter.notifyItemInserted(index)
-        }, ::updateResult, { task, _ ->
+        }, ::updateResult, {
             val mData = ArrayList(tabInfo.fileInfos)
             for (file in mData) {
-                task.updateProgress(FileInfo(file))
+                updateProgress(FileInfo(file))
             }
         })
         converting?.executeOnExecutor(ThreadManager.getInstance().executorService)

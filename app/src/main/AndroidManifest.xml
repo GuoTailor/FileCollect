@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <dist:module dist:instant="true" />
 
@@ -19,8 +20,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".ui.MainTabActivity">
+            android:theme="@style/Theme.AppCompat.Light"/>
+
+        <activity android:name=".ui.NewMainTabActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

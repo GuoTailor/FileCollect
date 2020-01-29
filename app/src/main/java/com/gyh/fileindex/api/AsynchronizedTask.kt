@@ -5,7 +5,7 @@ import android.os.AsyncTask
 open class AsynchronizedTask<T>(
     val updateProgress: ((Array<out T>) -> Unit)? = null,
     val updateResult: ((String) -> Unit)? = null,
-    val operation: (AsynchronizedTask<T>, Array<out String?>) -> Unit
+    val operation: AsynchronizedTask<T>.(Array<out String?>) -> Unit
 ) : AsyncTask<String, T, String>() {
 
     override fun doInBackground(vararg params: String?): String {
