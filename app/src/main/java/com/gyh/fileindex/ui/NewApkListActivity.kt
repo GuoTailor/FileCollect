@@ -28,6 +28,7 @@ import com.gyh.fileindex.appbar.SmokeScreen
 import com.gyh.fileindex.bean.ApkInfo
 import com.gyh.fileindex.bean.TabInfo
 import com.gyh.fileindex.util.Util
+import com.yanzhenjie.recyclerview.SwipeMenuCreator
 import com.yanzhenjie.recyclerview.SwipeMenuItem
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -90,8 +91,22 @@ class NewApkListActivity : AppCompatActivity() , SmokeScreen {
             }
 
         }
+        initAdapter()
         initRecyclerView()
     }
+
+    /**
+     * 注册图形Layout
+
+    abstract fun getLayoutId(viewType: Int): Int*/
+
+    /**
+     * 注册图形组件
+
+    abstract fun convert(holder: QuickAdapter<T>.VH, data: T, position: Int)
+
+    open fun convert(holder: QuickAdapter<T>.VH, data: T, position: Int, payloads: List<*>) {}*/
+
 
     /**
      * Shows a view that goes from white at it's lowest part to transparent a the top.
@@ -105,6 +120,66 @@ class NewApkListActivity : AppCompatActivity() , SmokeScreen {
         Util.revealShow(fab_bg, false)
     }
 
+    open fun initAdapter() {
+        val swipeMenuCreator =
+            SwipeMenuCreator { swipeLeftMenu, swipeRightMenu, position ->
+                val width = resources.getDimensionPixelSize(R.dimen.dp_70)
+                // 1. MATCH_PARENT 自适应高度，保持和Item一样高;
+                // 2. 指定具体的高，比如80;
+                // 3. WRAP_CONTENT，自身高度，不推荐;
+                val height = ViewGroup.LayoutParams.MATCH_PARENT
+                // 添加右侧的，如果不添加，则右侧不会出现菜单。
+                val deleteItem =
+                    SwipeMenuItem(context).setBackground(R.drawable.selector_green)
+                        .setText("打开")
+                        .setTextColor(Color.WHITE)
+                        .setWidth(width)
+                        .setHeight(height)
+                swipeRightMenu.addMenuItem(deleteItem)// 添加菜单到右侧。
+
+                val addItem =
+                    SwipeMenuItem(context).setBackground(R.drawable.selector_red)
+                        .setText("删除")
+                        .setTextColor(Color.WHITE)
+                        .setWidth(width)
+                        .setHeight(height)
+                swipeRightMenu.addMenuItem(addItem) // 添加菜单到右侧。
+            }
+        // 菜单点击监听。
+
+        /*val mMenuItemClickListener =
+            OnItemMenuClickListener { menuBridge, position ->
+                menuBridge.closeMenu()
+
+                val direction = menuBridge.direction // 左侧还是右侧菜单。
+                val menuPosition = menuBridge.position // 菜单在RecyclerView的Item中的Position。
+
+                if (direction == SwipeRecyclerView.RIGHT_DIRECTION) {
+                    when (menuPosition) {
+                        0 -> {
+                            Util.openFile(File(data[position].path), this)
+                        }
+                        1 -> {
+                            val fileInfo = data[position]
+                            File(fileInfo.path).delete()
+                            Log.d("DoLog", "删除：" + fileInfo.path)
+                            data.remove(fileInfo)
+                            quickAdapter.notifyItemRemoved(position)
+                        }
+                    }
+                }
+            }
+        recyclerView.setSwipeMenuCreator(swipeMenuCreator)
+        recyclerView.setOnItemMenuClickListener(mMenuItemClickListener)
+        recyclerView.setOnItemLongClickListener { view, position ->
+            val mdata = data[position]
+            showPropertiesDialog(mdata, this)
+        }*/
+    }
+
+    /*open fun showPropertiesDialog(baseFile: T, activity: Activity) {
+        Util.showPropertiesDialog(baseFile, this)
+    }*/
 
     open fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(this)

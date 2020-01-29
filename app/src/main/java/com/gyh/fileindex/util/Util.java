@@ -1,11 +1,13 @@
 package com.gyh.fileindex.util;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -19,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -68,6 +72,44 @@ public class Util {
             bytes.append((int) size).append("B");
         }
         return bytes.toString();
+    }
+
+    private static int mNoPermissionIndex = 0;
+    private static int PERMISSION_REQUEST_CODE = 1;
+    private static String[] permissionManifest = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
+
+    private static int[] noPermissionTip = {
+            R.string.no_read_phone_state_permission,
+            R.string.no_write_external_storage_permission,
+            R.string.no_read_external_storage_permission
+    };
+
+    public static void permissionCheck(Activity activity) {
+        int permissionCheck = PackageManager.PERMISSION_GRANTED;
+        String permission;
+        for (int i = 0; i < permissionManifest.length; i++) {
+            permission = permissionManifest[i];
+            mNoPermissionIndex = i;
+            if (ContextCompat.checkSelfPermission(activity, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissionCheck = PackageManager.PERMISSION_DENIED;
+            }
+        }
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= 23) {
+                ActivityCompat.requestPermissions(activity, permissionManifest, PERMISSION_REQUEST_CODE);
+            } else {
+                showNoPermissionTip(activity, activity.getString(noPermissionTip[mNoPermissionIndex]));
+                activity.finish();
+            }
+        }
+    }
+
+    private static void showNoPermissionTip(Context context, String tip) {
+        Toast.makeText(context, tip, Toast.LENGTH_LONG).show();
     }
 
     public static void revealShow(final View view, boolean reveal) {

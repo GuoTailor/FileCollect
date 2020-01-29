@@ -21,9 +21,4 @@
     android:title="@string/shrine_icon_filter_title"
     android:icon="@drawable/ic_filter_list_vd_theme_24"
     app:showAsAction="always"/>
-  <item
-    android:id="@+id/ShrineToolbarSearchIcon"
-    android:title="@string/shrine_icon_search_title"
-    android:icon="@drawable/ic_search_vd_theme_24"
-    app:showAsAction="always"/>
 </menu>

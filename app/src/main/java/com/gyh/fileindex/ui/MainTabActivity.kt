@@ -155,7 +155,8 @@ class MainTabActivity : AppCompatActivity(), Monitor {
         }
     }
 
-    override fun updateResult(result: String) = Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+    override fun updateResult(result: String) =
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
 
     override fun isCare(file: File) = true
 

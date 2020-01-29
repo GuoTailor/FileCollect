@@ -79,6 +79,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
                 TabInfoData.ppt
             )
         )
+        Util.permissionCheck(this)
         initCollapsingToolbar()
         initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)

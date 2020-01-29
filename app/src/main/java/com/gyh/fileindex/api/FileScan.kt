@@ -63,6 +63,7 @@ class FileScan(
             shellThreaded.run(cmds.toString(), object : Shell.OnSyncCommandLineListener {
                 override fun onSTDERR(line: String) {
                     Log.e("NMKA2-err", line)
+                    onPostExecute(line)
                 }
 
                 override fun onSTDOUT(line: String) {
