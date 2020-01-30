@@ -64,7 +64,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
             val index = data.indexOf(it[0])
             quickAdapter.notifyItemInserted(index)
         }, ::updateResult, {
-            tabInfo.fileInfos.forEach {
+            ArrayList(tabInfo.fileInfos).forEach {
                 updateProgress(ApkInfo(it))
             }
         })
@@ -80,7 +80,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
         holder.getView<TextView>(R.id.size)?.text = data.size
         holder.getView<TextView>(R.id.appName)?.text = data.appName
         holder.getView<ImageView>(R.id.img)?.setImageDrawable(data.icon)
-        holder.getView<TextView>(R.id.version)?.text = "版本: " + data.version
+        holder.getView<TextView>(R.id.version)?.text = "版本: ${data.version}"
         holder.getView<TextView>(R.id.currentVersion)?.text = data.currentVersion
     }
 

@@ -41,7 +41,7 @@ class ApkInfo(
 
             appName = pm.getApplicationLabel(appInfo).toString()// 得到应用名
             packageName = appInfo.packageName // 得到包名
-            version = pkgInfo.versionName // 得到版本信息
+            version = pkgInfo.versionName ?: "未知" // 得到版本信息
             try {
                 currentVersion = "已安装：" +
                         pm.getPackageInfo(

@@ -60,7 +60,7 @@ class FileListActivity : BaseActivity<FileInfo>(), Monitor {
             val index = data.indexOf(it[0])
             quickAdapter.notifyItemInserted(index)
         }, ::updateResult, {
-            tabInfo.fileInfos.forEach {
+            ArrayList(tabInfo.fileInfos).forEach {
                 updateProgress(FileInfo(it))
             }
         })
