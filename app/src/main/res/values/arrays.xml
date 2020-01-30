@@ -25,7 +25,7 @@
         <item>@string/sortName</item>
         <item>@string/lastModified</item>
         <item>@string/sortSize</item>
-        <item>@string/type</item>
+        <item>@string/path</item>
     </string-array>
     <!-- Reply Preference -->
     <string-array name="reply_entries">

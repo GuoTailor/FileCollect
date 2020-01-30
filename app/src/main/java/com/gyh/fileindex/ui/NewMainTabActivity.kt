@@ -24,6 +24,7 @@ import com.gyh.fileindex.SettingsActivity
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.TabInfo
+import com.gyh.fileindex.util.ThreadManager
 import com.gyh.fileindex.util.Util
 import kotlinx.android.synthetic.main.activity_main_tab.*
 import java.io.File

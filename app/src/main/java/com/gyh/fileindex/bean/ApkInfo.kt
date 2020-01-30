@@ -17,14 +17,16 @@ class ApkInfo(
     icon: Drawable? = null, //TODO 使用默认图标代替
     path: String = "未知",
     size: String = "未知",
+    intSize: Long = 0,
     date: String = "未知",
     name: String = "未知",
     file: File
-) : FileInfo(name, icon, path, size, date, file) {
+) : FileInfo(name, icon, path, size, intSize, date, file) {
 
     constructor(file: File) : this(
         date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(file.lastModified()),
         size = Util.getNetFileSizeDescription(file.length()),
+        intSize = file.length(),
         path = file.absolutePath,
         name = file.name,
         file = file

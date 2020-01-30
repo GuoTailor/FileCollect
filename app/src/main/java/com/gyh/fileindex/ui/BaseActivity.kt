@@ -20,12 +20,13 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
+import com.gyh.fileindex.api.SortAdapter
+import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.appbar.AppBar
 import com.gyh.fileindex.appbar.SmokeScreen
-import com.gyh.fileindex.util.Util
-import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.FileInfo
 import com.gyh.fileindex.bean.TabInfo
+import com.gyh.fileindex.util.Util
 import com.yanzhenjie.recyclerview.OnItemMenuClickListener
 import com.yanzhenjie.recyclerview.SwipeMenuCreator
 import com.yanzhenjie.recyclerview.SwipeMenuItem
@@ -37,11 +38,12 @@ import java.io.File
 abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
     lateinit var tabInfo: TabInfo
     abstract var data: ArrayList<T>
-    open lateinit var context: Context
-    open lateinit var quickAdapter: QuickAdapter<T>
-    open lateinit var appbar: AppBar
-    open var search: Boolean = false
-    open lateinit var btnAnim: Animation
+    lateinit var context: Context
+    lateinit var quickAdapter: QuickAdapter<T>
+    private lateinit var appbar: AppBar
+    private var search: Boolean = false // 搜索框
+    private lateinit var btnAnim: Animation
+    abstract var sortAdapter: SortAdapter<T>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,10 +71,10 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
             }
         }
         fab_bg.setBackgroundResource(R.drawable.fab_shadow_black)
-        fab_bg.setOnClickListener { view -> if (appbar.searchView.isEnabled) appbar.searchView.hideSearchView() }
-        appbar.toolbar.setElevation(0.0f)
+        fab_bg.setOnClickListener { if (appbar.searchView.isEnabled) appbar.searchView.hideSearchView() }
+        appbar.toolbar.elevation = 0.0f
         setSupportActionBar(appbar.toolbar)
-        val tag = intent.getStringExtra(TabInfoData.tag)
+        val tag = intent.getStringExtra(TabInfoData.tag) ?: ""
         tabInfo = TabInfoData.getTabInfo(tag)
         quickAdapter = object : QuickAdapter<T>(data) {
 
@@ -104,6 +106,10 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
 
     open fun convert(holder: QuickAdapter<T>.VH, data: T, position: Int, payloads: List<*>) {}
 
+    /**
+     * 排序[data]
+     */
+    abstract fun sort()
 
     /**
      * Shows a view that goes from white at it's lowest part to transparent a the top.
@@ -119,7 +125,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
 
     open fun initAdapter() {
         val swipeMenuCreator =
-            SwipeMenuCreator { swipeLeftMenu, swipeRightMenu, position ->
+            SwipeMenuCreator { _, swipeRightMenu, _ ->
                 val width = resources.getDimensionPixelSize(R.dimen.dp_70)
                 // 1. MATCH_PARENT 自适应高度，保持和Item一样高;
                 // 2. 指定具体的高，比如80;
@@ -168,7 +174,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
             }
         recyclerView.setSwipeMenuCreator(swipeMenuCreator)
         recyclerView.setOnItemMenuClickListener(mMenuItemClickListener)
-        recyclerView.setOnItemLongClickListener { view, position ->
+        recyclerView.setOnItemLongClickListener { _, position ->
             val mdata = data[position]
             showPropertiesDialog(mdata, this)
         }
@@ -247,18 +253,24 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
             }
             R.id.sort -> {
                 val sort = resources.getStringArray(R.array.sortby)
-                val current = 1
+                val current = sortAdapter.getCurrentSortIndex()
                 val a = MaterialDialog.Builder(this)
                 a.items(*sort).itemsCallbackSingleChoice(
                     if (current > 3) current - 4 else current
-                ) { dialog, view, which, text -> true }
+                ) { _, _, _, _ -> true }
                 a.negativeText(R.string.ascending)
                 a.positiveText(R.string.descending)
-                a.onNegative { dialog, which ->
-                    Toast.makeText(this, "升序" + dialog.selectedIndex, Toast.LENGTH_SHORT).show()
+                a.onNegative { dialog, _ ->
+                    Toast.makeText(this, "升序 " + sort[dialog.selectedIndex], Toast.LENGTH_SHORT).show()
+                    sortAdapter.setOrder(sort[dialog.selectedIndex], getString(R.string.ascending))
+                    sort()
+                    quickAdapter.notifyDataSetChanged()
                 }
-                a.onPositive { dialog, which ->
-                    Toast.makeText(this, "降序" + dialog.selectedIndex, Toast.LENGTH_SHORT).show()
+                a.onPositive { dialog, _ ->
+                    Toast.makeText(this, "降序 " + sort[dialog.selectedIndex], Toast.LENGTH_SHORT).show()
+                    sortAdapter.setOrder(sort[dialog.selectedIndex], getString(R.string.descending))
+                    sort()
+                    quickAdapter.notifyDataSetChanged()
                 }
                 a.title(R.string.sortby)
                 a.build().show()

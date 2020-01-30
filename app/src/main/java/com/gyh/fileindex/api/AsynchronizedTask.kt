@@ -3,8 +3,8 @@ package com.gyh.fileindex.api
 import android.os.AsyncTask
 
 open class AsynchronizedTask<T>(
-    val updateProgress: ((Array<out T>) -> Unit)? = null,
-    val updateResult: ((String) -> Unit)? = null,
+    private val updateProgress: ((Array<out T>) -> Unit)? = null,
+    private val updateResult: ((String) -> Unit)? = null,
     val operation: AsynchronizedTask<T>.(Array<out String?>) -> Unit
 ) : AsyncTask<String, T, String>() {
 

@@ -9,35 +9,34 @@ import com.gyh.fileindex.R
 import com.gyh.fileindex.api.AsynchronizedTask
 import com.gyh.fileindex.util.ThreadManager
 import com.gyh.fileindex.api.Monitor
+import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.ApkInfo
 import com.gyh.fileindex.util.Util
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
 
 class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
     override var data = ArrayList<ApkInfo>()
     private var converting: AsynchronizedTask<ApkInfo>? = null
+    override lateinit var sortAdapter: SortAdapter<ApkInfo>
 
     override fun updateProgress(vararg files: File) {
         for (file in files) {
             val apkInfo = ApkInfo(file)
             data.add(apkInfo)
-            data.sortWith(Comparator { o1, o2 ->
-                val i = o1.appName.compareTo(o2.appName)
-                if (i == 0) {
-                    o1.version.compareTo(o2.version)
-                } else {
-                    i
-                }
-            })
+            sortAdapter.sort(data)
             val index = data.indexOf(apkInfo)
             quickAdapter.notifyItemInserted(index)
         }
     }
 
+    override fun sort() = sortAdapter.sort(data)
+
     override fun updateResult(result: String) {
         fab.clearAnimation()
+        recyclerView.scrollToPosition(0)
     }
 
     override fun showPropertiesDialog(baseFile: ApkInfo, activity: Activity) {
@@ -49,14 +48,24 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TabInfoData.addListener(this)
+        sortAdapter = object : SortAdapter<ApkInfo>(this, tabInfo.text) {
+            override fun compare(): Comparator<ApkInfo> {
+                return if (sort.equals(context.getString(R.string.sortName))) {
+                    Comparator { o1, o2 ->
+                        o1.appName.trimStart().compareTo(o2.appName.trimStart())
+                    }
+                } else
+                    super.compare()
+            }
+        }
         converting = AsynchronizedTask({
             data.add(it[0])
+            sortAdapter.sort(data)
             val index = data.indexOf(it[0])
             quickAdapter.notifyItemInserted(index)
         }, ::updateResult, {
-            val mData = ArrayList(tabInfo.fileInfos)
-            for (file in mData) {
-                updateProgress(ApkInfo(file))
+            tabInfo.fileInfos.forEach {
+                updateProgress(ApkInfo(it))
             }
         })
         converting?.executeOnExecutor(ThreadManager.getInstance().executorService)

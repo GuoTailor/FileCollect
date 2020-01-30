@@ -43,6 +43,7 @@ import com.gyh.fileindex.bean.ApkInfo;
 import com.gyh.fileindex.bean.FileInfo;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +108,32 @@ public class Util {
             }
         }
     }
+
+    public static int getNumberOfCPUCores() {
+        int cores;
+        try {
+            cores = new File("/sys/devices/system/cpu/").listFiles(CPU_FILTER).length;
+        } catch (SecurityException e) {
+            cores = -1;
+        } catch (NullPointerException e) {
+            cores = -2;
+        }
+        return cores;
+    }
+
+    private static final FileFilter CPU_FILTER = pathname -> {
+        String path = pathname.getName();
+        //regex is slow, so checking char by char.
+        if (path.startsWith("cpu")) {
+            for (int i = 3; i < path.length(); i++) {
+                if (path.charAt(i) < '0' || path.charAt(i) > '9') {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    };
 
     private static void showNoPermissionTip(Context context, String tip) {
         Toast.makeText(context, tip, Toast.LENGTH_LONG).show();

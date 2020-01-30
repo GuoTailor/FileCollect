@@ -11,13 +11,14 @@ public class ThreadManager {
     private static final String TAG = "ThreadManager";
     private ExecutorService executorService ;
     private static ThreadManager instance;
+    private static int poolSize = 4;
 
     /**
      * 私有化构造函数，使用单列模式
      */
     private ThreadManager() {
-        executorService = new ThreadPoolExecutor(2, 4,
-                3L, TimeUnit.MINUTES, new LinkedBlockingQueue<>(1), (run, executor) -> {
+        executorService = new ThreadPoolExecutor(poolSize, poolSize, 0L,
+                TimeUnit.MINUTES, new LinkedBlockingQueue<>(32), (run, executor) -> {
             if (!executor.isShutdown()) {
                 try {
                     executor.getQueue().put(run);
@@ -26,6 +27,14 @@ public class ThreadManager {
                 }
             }
         });
+    }
+
+    /**
+     * 初始化线程池的大小，默认为4，注意：初始化须在使用之前调用，否则无效
+     * @param poolSize 线程池的大小
+     */
+    public static void init(int poolSize) {
+        ThreadManager.poolSize = poolSize;
     }
 
     public ExecutorService getExecutorService() {

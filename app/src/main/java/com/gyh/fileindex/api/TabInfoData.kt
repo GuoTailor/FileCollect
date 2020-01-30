@@ -90,6 +90,11 @@ object TabInfoData {
         }
     }
 
+    /**
+     * 关闭文件扫描
+     */
+    fun shutdown() = fileScan?.shutdown()
+
     enum class Status {
         /**
          * Indicates that the task is running.

@@ -33,7 +33,7 @@
     <string name="sortName">名称</string>
     <string name="lastModified">最后修改时间</string>
     <string name="sortSize">大小</string>
-    <string name="type">类型</string>
+    <string name="path">路径</string>
 
     <string name="ascending">升序排列</string>
     <string name="descending">降序排列</string>
