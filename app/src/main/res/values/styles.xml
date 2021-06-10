@@ -33,6 +33,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowLightStatusBar">@color/holo_dark_action_mode</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSurface">@color/colorPrimary</item>
     </style>
 
     <!-- appCompat -->

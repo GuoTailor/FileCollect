@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
@@ -26,16 +27,19 @@ import com.gyh.fileindex.appbar.AppBar
 import com.gyh.fileindex.appbar.SmokeScreen
 import com.gyh.fileindex.bean.FileInfo
 import com.gyh.fileindex.bean.TabInfo
+import com.gyh.fileindex.databinding.ActivityMainBinding
+import com.gyh.fileindex.databinding.ContentMainBinding
 import com.gyh.fileindex.util.Util
 import com.yanzhenjie.recyclerview.OnItemMenuClickListener
 import com.yanzhenjie.recyclerview.SwipeMenuCreator
 import com.yanzhenjie.recyclerview.SwipeMenuItem
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
 
 abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
+    private val TAG = this.javaClass.simpleName
+    lateinit var binding: ActivityMainBinding
+    lateinit var recyclerView: SwipeRecyclerView
     lateinit var tabInfo: TabInfo
     abstract var data: ArrayList<T>
     lateinit var context: Context
@@ -47,8 +51,10 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        fab.setOnClickListener { view ->
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        recyclerView = ContentMainBinding.inflate(layoutInflater).recyclerView
+        setContentView(binding.root)
+        binding.fab.setOnClickListener { view ->
             if (search) return@setOnClickListener
             val previousSize = data.size
             if (TabInfoData.scan() == TabInfoData.Status.RUNNING) {
@@ -57,7 +63,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
                 return@setOnClickListener
             }
             data.clear()
-            fab.startAnimation(btnAnim)
+            binding.fab.startAnimation(btnAnim)
             quickAdapter.notifyItemRangeRemoved(0, previousSize)
         }
         context = this
@@ -70,8 +76,8 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
                 search = true
             }
         }
-        fab_bg.setBackgroundResource(R.drawable.fab_shadow_black)
-        fab_bg.setOnClickListener { if (appbar.searchView.isEnabled) appbar.searchView.hideSearchView() }
+        binding.fabBg.setBackgroundResource(R.drawable.fab_shadow_black)
+        binding.fabBg.setOnClickListener { if (appbar.searchView.isEnabled) appbar.searchView.hideSearchView() }
         appbar.toolbar.elevation = 0.0f
         setSupportActionBar(appbar.toolbar)
         val tag = intent.getStringExtra(TabInfoData.tag) ?: ""
@@ -116,11 +122,11 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
      * It covers the fragment.
      */
     override fun showSmokeScreen() {
-        Util.revealShow(fab_bg, true)
+        Util.revealShow(binding.fabBg, true)
     }
 
     override fun hideSmokeScreen() {
-        Util.revealShow(fab_bg, false)
+        Util.revealShow(binding.fabBg, false)
     }
 
     open fun initAdapter() {
@@ -197,10 +203,10 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && fab.visibility == View.VISIBLE) {
-                    fab.hide()
-                } else if (dy < 0 && fab.visibility != View.VISIBLE) {
-                    fab.show()
+                if (dy > 0 && binding.fab.visibility == View.VISIBLE) {
+                    binding.fab.hide()
+                } else if (dy < 0 && binding.fab.visibility != View.VISIBLE) {
+                    binding.fab.show()
                 }
             }
         })
@@ -253,27 +259,27 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
             }
             R.id.sort -> {
                 val sort = resources.getStringArray(R.array.sortby)
-                val current = sortAdapter.getCurrentSortIndex()
-                val a = MaterialDialog.Builder(this)
-                a.items(*sort).itemsCallbackSingleChoice(
-                    if (current > 3) current - 4 else current
-                ) { _, _, _, _ -> true }
-                a.negativeText(R.string.ascending)
-                a.positiveText(R.string.descending)
-                a.onNegative { dialog, _ ->
-                    Toast.makeText(this, "升序 " + sort[dialog.selectedIndex], Toast.LENGTH_SHORT).show()
-                    sortAdapter.setOrder(sort[dialog.selectedIndex], getString(R.string.ascending))
+                var current = sortAdapter.getCurrentSortIndex()
+                val a = MaterialAlertDialogBuilder(context)
+
+                a.setItems(sort) { dialog, which ->
+                    Log.i(TAG, "onOptionsItemSelected: $dialog $which")
+                }
+                a.setSingleChoiceItems(sort, current) { _, which -> current = which }
+                a.setNegativeButton(R.string.ascending) { _, _ ->
+                    Toast.makeText(this, "升序 " + sort[current], Toast.LENGTH_SHORT).show()
+                    sortAdapter.setOrder(sort[current], getString(R.string.ascending))
                     sort()
                     quickAdapter.notifyDataSetChanged()
                 }
-                a.onPositive { dialog, _ ->
-                    Toast.makeText(this, "降序 " + sort[dialog.selectedIndex], Toast.LENGTH_SHORT).show()
-                    sortAdapter.setOrder(sort[dialog.selectedIndex], getString(R.string.descending))
+                a.setPositiveButton(R.string.descending) { _, _ ->
+                    Toast.makeText(this, "降序 " + sort[current], Toast.LENGTH_SHORT).show()
+                    sortAdapter.setOrder(sort[current], getString(R.string.descending))
                     sort()
                     quickAdapter.notifyDataSetChanged()
                 }
-                a.title(R.string.sortby)
-                a.build().show()
+                a.setTitle(R.string.sortby)
+                a.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)

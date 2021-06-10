@@ -19,19 +19,19 @@
   <item
     android:id="@+id/BottomNavFavorites"
     android:enabled="true"
-    android:title="@string/shrine_bottom_nav_favorites"
+    android:title="shrine_bottom_nav_favorites"
     android:icon="@drawable/ic_favorite_vd_theme_24"
     app:showAsAction="ifRoom"/>
   <item
     android:id="@+id/BottomNavHome"
     android:enabled="true"
-    android:title="@string/shrine_bottom_nav_home"
+    android:title="shrine_bottom_nav_home"
     android:icon="@drawable/ic_shrine_vd_theme_24"
     app:showAsAction="ifRoom"/>
   <item
     android:id="@+id/BottomNavCart"
     android:enabled="true"
-    android:title="@string/shrine_bottom_nav_cart"
+    android:title="shrine_bottom_nav_cart"
     android:icon="@drawable/ic_shopping_cart_vd_theme_24"
     app:showAsAction="ifRoom"/>
 </menu>

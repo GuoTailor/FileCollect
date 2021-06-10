@@ -13,8 +13,6 @@ import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.ApkInfo
 import com.gyh.fileindex.util.Util
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
 
 class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
@@ -35,7 +33,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
     override fun sort() = sortAdapter.sort(data)
 
     override fun updateResult(result: String) {
-        fab.clearAnimation()
+        binding.fab.clearAnimation()
         recyclerView.scrollToPosition(0)
     }
 
@@ -46,6 +44,11 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
     override fun isCare(file: File) = tabInfo.exitSuffix(file.name)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val tag = intent.getStringExtra(TabInfoData.tag) ?: ""
+        val tabInfo = TabInfoData.getTabInfo(tag)
+        ArrayList(tabInfo.fileInfos).forEach {
+            data.add(ApkInfo(it))
+        }
         super.onCreate(savedInstanceState)
         TabInfoData.addListener(this)
         sortAdapter = object : SortAdapter<ApkInfo>(this, tabInfo.text) {

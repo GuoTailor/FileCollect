@@ -11,8 +11,6 @@ import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.FileInfo
 import com.gyh.fileindex.util.ThreadManager
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
 
 class FileListActivity : BaseActivity<FileInfo>(), Monitor {
@@ -42,7 +40,7 @@ class FileListActivity : BaseActivity<FileInfo>(), Monitor {
     }
 
     override fun updateResult(result: String) {
-        fab.clearAnimation()
+        binding.fab.clearAnimation()
         recyclerView.scrollToPosition(0)
     }
 

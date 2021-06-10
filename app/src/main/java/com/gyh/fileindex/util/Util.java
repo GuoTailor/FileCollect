@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -25,16 +27,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.gyh.fileindex.R;
 import com.gyh.fileindex.api.CountItemsOrAndSizeTask;
 import com.gyh.fileindex.api.GenerateHashesTask;
@@ -47,6 +47,7 @@ import java.io.FileFilter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static androidx.core.content.ContextCompat.getColor;
 
@@ -99,6 +100,12 @@ public class Util {
                 permissionCheck = PackageManager.PERMISSION_DENIED;
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // 先判断有没有权限
+            if (!Environment.isExternalStorageManager()) {
+                activity.startActivityForResult(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION), PERMISSION_REQUEST_CODE);
+            }
+        }
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= 23) {
                 ActivityCompat.requestPermissions(activity, permissionManifest, PERMISSION_REQUEST_CODE);
@@ -112,7 +119,7 @@ public class Util {
     public static int getNumberOfCPUCores() {
         int cores;
         try {
-            cores = new File("/sys/devices/system/cpu/").listFiles(CPU_FILTER).length;
+            cores = Objects.requireNonNull(new File("/sys/devices/system/cpu/").listFiles(CPU_FILTER)).length;
         } catch (SecurityException e) {
             cores = -1;
         } catch (NullPointerException e) {
@@ -140,8 +147,9 @@ public class Util {
     }
 
     public static void revealShow(final View view, boolean reveal) {
+        ObjectAnimator animator;
         if (reveal) {
-            ObjectAnimator animator = ObjectAnimator.ofFloat(view, View.ALPHA, 0f, 1f);
+            animator = ObjectAnimator.ofFloat(view, View.ALPHA, 0f, 1f);
             animator.setDuration(300); //ms
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
@@ -149,10 +157,8 @@ public class Util {
                     view.setVisibility(View.VISIBLE);
                 }
             });
-            animator.start();
         } else {
-
-            ObjectAnimator animator = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0f);
+            animator = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0f);
             animator.setDuration(300); //ms
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
@@ -160,8 +166,8 @@ public class Util {
                     view.setVisibility(View.GONE);
                 }
             });
-            animator.start();
         }
+        animator.start();
     }
 
     /**
@@ -202,11 +208,6 @@ public class Util {
      * @param activity activity
      */
     public static void showPropertiesDialog(final ApkInfo baseFile, Activity activity) {
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(activity);
-        builder.title(activity.getString(R.string.properties));
-        if (baseFile.getIcon() != null) {
-            builder.icon(baseFile.getIcon());
-        }
         View v = activity.getLayoutInflater().inflate(R.layout.properties_dialog, null);
         TextView itemsText = v.findViewById(R.id.t7);
         int accentColor = activity.getResources().getColor(R.color.zt, null);
@@ -293,15 +294,19 @@ public class Util {
                 return false;
             });
         }
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity);
+        builder.setTitle(activity.getString(R.string.properties));
+        if (baseFile.getIcon() != null) {
+            builder.setIcon(baseFile.getIcon());
+        }
+        builder.setView(v);
 
+        //builder.customView(v, true);
+        builder.setPositiveButton(activity.getString(R.string.ok), (dialog, which) -> {
 
-        builder.customView(v, true);
-        builder.positiveText(activity.getString(R.string.ok));
-        builder.positiveColor(accentColor);
-
-        MaterialDialog materialDialog = builder.build();
-        materialDialog.show();
-        materialDialog.getActionButton(DialogAction.NEGATIVE).setEnabled(false);
+        });
+        //builder.(accentColor);
+        builder.show();
 
     }
 
@@ -316,8 +321,8 @@ public class Util {
 
         final String date = baseFile.getDate();
 
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(activity);
-        builder.title(activity.getString(R.string.properties));
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity);
+        builder.setTitle(activity.getString(R.string.properties));
 
         View v = activity.getLayoutInflater().inflate(R.layout.properties_dialog_file_info, null);
         TextView itemsText = v.findViewById(R.id.t7);
@@ -410,18 +415,18 @@ public class Util {
             chart.invalidate();
         }
 
-
-        builder.customView(v, true);
-        builder.positiveText(activity.getString(R.string.ok));
-        builder.positiveColor(accentColor);
-        builder.dismissListener(dialog -> {
+        builder.setView(v);
+        //builder.customView(v, true);
+        builder.setPositiveButton(activity.getString(R.string.ok), ((dialog, which) -> {
+        }));
+        builder.setOnDismissListener(dialog -> {
             countItemsOrAndSizeTask.cancel(true);
             hashGen.cancel(true);
         });
 
-        MaterialDialog materialDialog = builder.build();
-        materialDialog.show();
-        materialDialog.getActionButton(DialogAction.NEGATIVE).setEnabled(false);
+//        MaterialDialog materialDialog = builder.build();
+        builder.show();
+//        materialDialog.getActionButton(DialogAction.NEGATIVE).setEnabled(false);
     }
 
     /**

@@ -18,7 +18,7 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
   <item
     android:id="@+id/ShrineToolbarFilterIcon"
-    android:title="@string/shrine_icon_filter_title"
+    android:title="shrine_icon_filter_title"
     android:icon="@drawable/ic_filter_list_vd_theme_24"
     app:showAsAction="always"/>
 </menu>

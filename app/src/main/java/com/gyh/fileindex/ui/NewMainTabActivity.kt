@@ -1,7 +1,6 @@
 package com.gyh.fileindex.ui
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.content.Intent
 import android.graphics.Point
 import android.os.Build
@@ -10,13 +9,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
@@ -24,23 +24,25 @@ import com.gyh.fileindex.SettingsActivity
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.TabInfo
-import com.gyh.fileindex.util.ThreadManager
+import com.gyh.fileindex.databinding.ActivityMainTabBinding
 import com.gyh.fileindex.util.Util
-import kotlinx.android.synthetic.main.activity_main_tab.*
 import java.io.File
+
 
 class NewMainTabActivity : AppCompatActivity(), Monitor {
     private lateinit var quickAdapter: QuickAdapter<TabInfo>
+    private lateinit var binding: ActivityMainTabBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Shrine)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_tab)
+        binding = ActivityMainTabBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         TabInfoData.data = listOf(
             TabInfo(
                 arrayOf(".apk"),
                 mutableListOf(),
-                getDrawable(R.mipmap.apk),
+                ContextCompat.getDrawable(this, R.mipmap.apk),
                 0,
                 TabInfoData.apk
             ),
@@ -84,7 +86,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         initCollapsingToolbar()
         initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
-        Util.showMainDialog(this, mainChart)
+        Util.showMainDialog(this, binding.mainChart)
         val status = TabInfoData.scan()
         if (status == TabInfoData.Status.RUNNING) Toast.makeText(
             this,
@@ -103,17 +105,29 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         collapsingToolbarLayout.title = toolbar.title
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Shrine_Logo)
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Shrine_Logo)
-        val windowSize = Point()
-        windowManager.defaultDisplay.getSize(windowSize)
-        val windowWidth = windowSize.x
+
+        val windowWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val metrics = windowManager.currentWindowMetrics
+            // Gets all excluding insets
+            val windowInsets = metrics.windowInsets
+            val insets = windowInsets.getInsetsIgnoringVisibility(
+                WindowInsets.Type.navigationBars()
+                        or WindowInsets.Type.displayCutout()
+            )
+            insets.right + insets.left
+        } else {
+            val windowSize = Point()
+            windowManager.defaultDisplay.getSize(windowSize)
+            windowSize.x
+        }
         collapsingToolbarImage.x = collapsingToolbarImage.x - windowWidth / 4
         collapsingToolbarLayout.scrimVisibleHeightTrigger =
             resources.getDimension(R.dimen.shrine_tall_toolbar_height).toInt() / 2
     }
 
     private fun initItemGrid() {
-        ProductGrid.setHasFixedSize(true)
-        ProductGrid.layoutManager = GridLayoutManager(this, 2)
+        binding.ProductGrid.setHasFixedSize(true)
+        binding.ProductGrid.layoutManager = GridLayoutManager(this, 2)
         quickAdapter = object : QuickAdapter<TabInfo>(TabInfoData.data) {
 
             override fun getLayoutId(viewType: Int): Int {
@@ -154,7 +168,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
                 }
             }
         }
-        ProductGrid.adapter = quickAdapter
+        binding.ProductGrid.adapter = quickAdapter
     }
 
     override fun onRequestPermissionsResult(
@@ -162,6 +176,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d("Main", ">$requestCode")
         for ((index, value) in permissions.withIndex()) {
             if (value == Manifest.permission.READ_EXTERNAL_STORAGE && grantResults[index] == 0) {
@@ -186,7 +201,8 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
 
     override fun isCare(file: File) = true
 
-    override fun updateResult(result: String) = Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+    override fun updateResult(result: String) =
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)

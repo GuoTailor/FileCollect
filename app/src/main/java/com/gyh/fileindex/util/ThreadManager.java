@@ -6,10 +6,9 @@ import java.util.concurrent.*;
  * Created by GYH on 2018/3/24.
  * 线程池工具
  */
-
 public class ThreadManager {
     private static final String TAG = "ThreadManager";
-    private ExecutorService executorService ;
+    private final ExecutorService executorService ;
     private static ThreadManager instance;
     private static int poolSize = 4;
 
