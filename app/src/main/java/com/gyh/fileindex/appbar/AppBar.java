@@ -24,10 +24,10 @@ public class AppBar {
 
     private int TOOLBAR_START_INSET;
 
-    private Toolbar toolbar;
-    private SearchView searchView;
+    private final Toolbar toolbar;
+    private final SearchView searchView;
 
-    private AppBarLayout appbarLayout;
+    private final AppBarLayout appbarLayout;
 
     public AppBar(Activity activity, SmokeScreen a, SearchView.SearchListener searchListener) {
         toolbar = activity.findViewById(R.id.action_bar);
@@ -35,7 +35,7 @@ public class AppBar {
 
         appbarLayout = activity.findViewById(R.id.lin);
 
-        if (SDK_INT >= 21) toolbar.setElevation(0);
+        toolbar.setElevation(0);
         /* For SearchView, see onCreateOptionsMenu(Menu menu)*/
         TOOLBAR_START_INSET = toolbar.getContentInsetStart();
 

@@ -1,184 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
+    android:minHeight="100dp"
+    android:orientation="vertical"
+    android:padding="20dp">
 
     <LinearLayout
+        android:id="@+id/properties_dialog_app_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:minHeight="100dp"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/properties_dialog_app_name"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/title_app_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/apk_name"
+            android:textSize="@dimen/material_generic_title" />
 
-            <TextView
-                android:id="@+id/title_app_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/apk_name"
-                android:textSize="@dimen/material_generic_title"/>
-
-            <TextView
-                android:id="@+id/t4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculating"
-                android:textSize="@dimen/material_generic_title_summary"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/properties_dialog_name"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/t4"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:text="@string/calculating"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/title_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/name"
-                android:textSize="@dimen/material_generic_title"/>
+    <LinearLayout
+        android:id="@+id/properties_dialog_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/t5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculating"
-                android:textSize="@dimen/material_generic_title_summary"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/properties_dialog_location"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/title_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/name"
+            android:textSize="@dimen/material_generic_title" />
 
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/title_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/location"
-                android:textSize="@dimen/material_generic_title"/>
-
-            <TextView
-                android:id="@+id/t6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculating"
-                android:textSize="@dimen/material_generic_title_summary"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/properties_dialog_size"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/t5"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:text="@string/calculating"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/title_size"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/size_capitalized"
-                android:textSize="@dimen/material_generic_title"/>
+    <LinearLayout
+        android:id="@+id/properties_dialog_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
 
-            <TextView
-                android:id="@+id/t7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculating"
-                android:textSize="@dimen/material_generic_title_summary"/>
-        </LinearLayout>
+        android:background="?selectableItemBackground"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/properties_dialog_date"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/title_location"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/location"
+            android:textSize="@dimen/material_generic_title" />
 
-            <TextView
-                android:id="@+id/title_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/date"
-                android:textSize="@dimen/material_generic_title"/>
-
-            <TextView
-                android:id="@+id/t8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculating"
-                android:textSize="@dimen/material_generic_title_summary"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/properties_dialog_version"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/t6"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:text="@string/calculating"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/title_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/version"
-                android:textSize="@dimen/material_generic_title"/>
+    <LinearLayout
+        android:id="@+id/properties_dialog_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/t9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculating"
-                android:textSize="@dimen/material_generic_title_summary"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/properties_dialog_current_version"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/title_size"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
-            android:background="?selectableItemBackground"
-            android:orientation="vertical">
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/size_capitalized"
+            android:textSize="@dimen/material_generic_title" />
 
-            <TextView
-                android:id="@+id/title_current_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/current_version"
-                android:textSize="@dimen/material_generic_title"/>
+        <TextView
+            android:id="@+id/t7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculating"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/t10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculating"
-                android:textSize="@dimen/material_generic_title_summary"/>
-        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/properties_dialog_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/date"
+            android:textSize="@dimen/material_generic_title" />
+
+        <TextView
+            android:id="@+id/t8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculating"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/properties_dialog_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/version"
+            android:textSize="@dimen/material_generic_title" />
+
+        <TextView
+            android:id="@+id/t9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculating"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/properties_dialog_current_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_current_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/current_version"
+            android:textSize="@dimen/material_generic_title" />
+
+        <TextView
+            android:id="@+id/t10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculating"
+            android:textSize="@dimen/material_generic_title_summary" />
     </LinearLayout>
 </LinearLayout>

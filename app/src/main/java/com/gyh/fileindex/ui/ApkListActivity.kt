@@ -44,11 +44,6 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
     override fun isCare(file: File) = tabInfo.exitSuffix(file.name)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val tag = intent.getStringExtra(TabInfoData.tag) ?: ""
-        val tabInfo = TabInfoData.getTabInfo(tag)
-        ArrayList(tabInfo.fileInfos).forEach {
-            data.add(ApkInfo(it))
-        }
         super.onCreate(savedInstanceState)
         TabInfoData.addListener(this)
         sortAdapter = object : SortAdapter<ApkInfo>(this, tabInfo.text) {
@@ -57,8 +52,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
                     Comparator { o1, o2 ->
                         o1.appName.trimStart().compareTo(o2.appName.trimStart())
                     }
-                } else
-                    super.compare()
+                } else super.compare()
             }
         }
         converting = AsynchronizedTask({

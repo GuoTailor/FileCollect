@@ -14,6 +14,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.format.Formatter;
@@ -114,6 +115,31 @@ public class Util {
                 activity.finish();
             }
         }
+    }
+
+    //获取指定目录的访问权限
+    public static void startFor(String path, Activity context) {
+        String uri = changeToUri(path);//调用方法，把path转换成可解析的uri文本，这个方法在下面会公布
+        Uri parse = Uri.parse(uri);
+        Intent intent = new Intent("android.intent.action.OPEN_DOCUMENT_TREE");
+        intent.addFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                        | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, parse);
+        }
+        context.startActivityForResult(intent, PERMISSION_REQUEST_CODE);//开始授权
+    }
+
+    //转换至uriTree的路径
+    public static String changeToUri(String path) {
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        String path2 = path.replace("/storage/emulated/0/", "").replace("/", "%2F");
+        return "content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3A" + path2;
     }
 
     public static int getNumberOfCPUCores() {
@@ -303,7 +329,6 @@ public class Util {
 
         //builder.customView(v, true);
         builder.setPositiveButton(activity.getString(R.string.ok), (dialog, which) -> {
-
         });
         //builder.(accentColor);
         builder.show();

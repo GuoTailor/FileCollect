@@ -3,6 +3,7 @@ package com.gyh.fileindex.ui
 import android.Manifest
 import android.content.Intent
 import android.graphics.Point
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -83,6 +85,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
             )
         )
         Util.permissionCheck(this)
+        Util.startFor("/storage/emulated/0", this)
         initCollapsingToolbar()
         initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
@@ -188,6 +191,20 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
                 ).show()
             }
             Log.d("Main", value + " > " + grantResults[index])
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return
+        }
+        val uri: Uri? = data.data
+        if (requestCode == 1 && uri != null) {
+            contentResolver.takePersistableUriPermission(
+                uri, data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            );//关键是这里，这个就是保存这个目录的访问权限
         }
     }
 

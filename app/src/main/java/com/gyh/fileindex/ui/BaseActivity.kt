@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.gyh.fileindex.QuickAdapter
@@ -28,7 +27,6 @@ import com.gyh.fileindex.appbar.SmokeScreen
 import com.gyh.fileindex.bean.FileInfo
 import com.gyh.fileindex.bean.TabInfo
 import com.gyh.fileindex.databinding.ActivityMainBinding
-import com.gyh.fileindex.databinding.ContentMainBinding
 import com.gyh.fileindex.util.Util
 import com.yanzhenjie.recyclerview.OnItemMenuClickListener
 import com.yanzhenjie.recyclerview.SwipeMenuCreator
@@ -52,7 +50,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        recyclerView = ContentMainBinding.inflate(layoutInflater).recyclerView
+        recyclerView = binding.recyclerView
         setContentView(binding.root)
         binding.fab.setOnClickListener { view ->
             if (search) return@setOnClickListener
@@ -71,7 +69,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
         appbar = AppBar(this, this) { queue ->
             if (queue.isNotEmpty()) {
                 val queueList = data.filter { it.name.contains(queue) }
-                quickAdapter.setmDatas(queueList)
+                quickAdapter.setData(queueList)
                 quickAdapter.notifyItemRangeRemoved(0, data.size)
                 search = true
             }
@@ -214,7 +212,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
 
     override fun onBackPressed() {
         if (search) {
-            quickAdapter.setmDatas(data)
+            quickAdapter.setData(data)
             quickAdapter.notifyItemRangeRemoved(0, data.size)
             search = false
         } else {
