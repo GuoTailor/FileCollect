@@ -2,6 +2,7 @@ package com.gyh.fileindex.ui
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build
@@ -14,7 +15,7 @@ import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.Nullable
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -32,8 +33,15 @@ import java.io.File
 
 
 class NewMainTabActivity : AppCompatActivity(), Monitor {
+    private val TAG = this.javaClass.simpleName
     private lateinit var quickAdapter: QuickAdapter<TabInfo>
     private lateinit var binding: ActivityMainTabBinding
+    val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted: Map<String, Boolean> ->
+            isGranted.entries.forEach { (k, v) ->
+                Log.d(TAG, "$k: $v")
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Shrine)
@@ -51,41 +59,42 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
             TabInfo(
                 arrayOf(".zip", ".rar", ".7z"),
                 mutableListOf(),
-                getDrawable(R.mipmap.zip),
+                ContextCompat.getDrawable(this, R.mipmap.zip),
                 0,
                 TabInfoData.zip
             ),
             TabInfo(
                 arrayOf(".xls", ".xlsx"),
                 mutableListOf(),
-                getDrawable(R.mipmap.excel),
+                ContextCompat.getDrawable(this, R.mipmap.excel),
                 0,
                 TabInfoData.excel
             ),
             TabInfo(
                 arrayOf(".doc", ".docx"),
                 mutableListOf(),
-                getDrawable(R.mipmap.word),
+                ContextCompat.getDrawable(this, R.mipmap.word),
                 0,
                 TabInfoData.word
             ),
             TabInfo(
                 arrayOf(".pdf"),
                 mutableListOf(),
-                getDrawable(R.mipmap.pdf),
+                ContextCompat.getDrawable(this, R.mipmap.pdf),
                 0,
                 TabInfoData.pdf
             ),
             TabInfo(
                 arrayOf(".ppt", ".pptx"),
                 mutableListOf(),
-                getDrawable(R.mipmap.ppt),
+                ContextCompat.getDrawable(this, R.mipmap.ppt),
                 0,
                 TabInfoData.ppt
             )
         )
-        Util.permissionCheck(this)
-        Util.startFor("/storage/emulated/0", this)
+        //Util.permissionCheck(this)
+        nmka()
+        //Util.startFor("/storage/emulated/0", this)
         initCollapsingToolbar()
         initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
@@ -97,6 +106,34 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
             Toast.LENGTH_SHORT
         ).show()
         TabInfoData.addListener(this)
+    }
+
+    fun nmka() {
+        for (permission in arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            when {
+                ContextCompat.checkSelfPermission(this, permission)
+                        == PackageManager.PERMISSION_GRANTED -> {
+                    // You can use the API that requires the permission.
+                    Log.d(TAG, "nmka: 已有权限 $permission")
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> {
+                    Toast.makeText(this, "请授予权限", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    // You can directly ask for the permission.
+                    // The registered ActivityResultCallback gets the result of this request.
+                    Log.d(TAG, "nmka: 申请权限 $permission")
+                    requestPermissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        )
+                    )
+                }
+            }
+        }
     }
 
     private fun initCollapsingToolbar() {
