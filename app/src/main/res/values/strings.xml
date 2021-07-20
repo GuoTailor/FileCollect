@@ -75,4 +75,10 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    
+    <string name="apply">申请</string>
+    <string name="refuse">被拒绝</string>
+    <string name="permanent_refused">被拒绝，请到设置中修改</string>
+    <string name="storage_permissions">存储权限</string>
+    <string name="data_permissions">Android目录访问权限</string>
 </resources>

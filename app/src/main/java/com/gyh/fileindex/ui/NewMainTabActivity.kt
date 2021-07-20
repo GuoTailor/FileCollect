@@ -41,6 +41,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
             isGranted.entries.forEach { (k, v) ->
                 Log.d(TAG, "$k: $v")
             }
+
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -180,12 +181,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
                 holder.getView<TextView>(R.id.count)?.text = "(${data.count})"
             }
 
-            override fun convert(
-                holder: VH,
-                data: TabInfo,
-                position: Int,
-                payloads: List<*>
-            ) {
+            override fun convert(holder: VH, data: TabInfo, position: Int, payloads: List<*>) {
                 for (type in payloads)
                     when (type) {
                         0 -> holder.getView<ImageView>(R.id.icon)?.setImageDrawable(data.icon)
@@ -232,7 +228,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data)
         if (data == null) {
             return
         }

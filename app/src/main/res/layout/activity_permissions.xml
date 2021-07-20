@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
+    android:minHeight="100dp"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:id="@+id/properties_dialog_app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/storage_permissions"
+            android:textSize="@dimen/material_generic_title" />
+
+        <TextView
+            android:id="@+id/t4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculating"
+            android:paddingStart="@dimen/dp_60"
+            android:paddingEnd="@dimen/dp_60"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/properties_dialog_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:layout_marginBottom="@dimen/spacebetweenitems_properties_dialog"
+        android:background="?selectableItemBackground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/data_permissions"
+            android:textSize="@dimen/material_generic_title" />
+
+        <TextView
+            android:id="@+id/t5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculating"
+            android:paddingStart="@dimen/dp_60"
+            android:paddingEnd="@dimen/dp_60"
+            android:gravity="start"
+            android:textDirection="ltr"
+            android:textSize="@dimen/material_generic_title_summary" />
+    </LinearLayout>
+
+</LinearLayout>

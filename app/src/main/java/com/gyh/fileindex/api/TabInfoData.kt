@@ -39,13 +39,13 @@ object TabInfoData {
         if (fileScan == null) {
             fileScan = FileScan(::updateProgress, ::updateResult)
         }
-        when {
-            fileScan?.status == AsyncTask.Status.RUNNING -> return Status.RUNNING
-            fileScan?.status == AsyncTask.Status.PENDING -> {
+        when (fileScan?.status) {
+            AsyncTask.Status.RUNNING -> return Status.RUNNING
+            AsyncTask.Status.PENDING -> {
                 clean()
                 fileScan?.executeOnExecutor(ThreadManager.getInstance().executorService, *allSuffix)
             }
-            fileScan?.status == AsyncTask.Status.FINISHED -> {
+            AsyncTask.Status.FINISHED -> {
                 fileScan = FileScan(::updateProgress, ::updateResult)
                 clean()
                 fileScan?.executeOnExecutor(ThreadManager.getInstance().executorService, *allSuffix)

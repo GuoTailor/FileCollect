@@ -40,14 +40,14 @@ open class SortAdapter<T : FileInfo>(val context: Context, fileKey: String) {
     }
 
     fun sort(data: ArrayList<T>) {
-        data.sortWith(Comparator { o1, o2 ->
+        data.sortWith { o1, o2 ->
             val result = compare().compare(o1, o2).orderBy()
             if (result == 0) {
                 o1.date.compareTo(o2.date)
             } else {
                 result
             }
-        })
+        }
     }
 
     fun getCurrentSortIndex(): Int {
