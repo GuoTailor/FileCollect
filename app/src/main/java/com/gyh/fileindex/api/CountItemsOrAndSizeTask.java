@@ -17,9 +17,9 @@ import com.gyh.fileindex.util.Util;
 
 public class CountItemsOrAndSizeTask extends AsyncTask<Void, Pair<Integer, Long>, String> {
 
-    private Context context;
-    private TextView itemsText;
-    private FileInfo file;
+    private final Context context;
+    private final TextView itemsText;
+    private final FileInfo file;
 
     public CountItemsOrAndSizeTask(Context c, TextView itemsText, FileInfo f) {
         this.context = c;

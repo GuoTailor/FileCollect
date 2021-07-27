@@ -34,9 +34,9 @@ public class LoadFolderSpaceDataTask extends AsyncTask<Void, Long, Pair<String, 
     private static int[] COLORS;
     private static String[] LEGENDS;
 
-    private Activity context;
-    private PieChart chart;
-    private FileInfo file;
+    private final Activity context;
+    private final PieChart chart;
+    private final FileInfo file;
 
     public LoadFolderSpaceDataTask(Activity c, PieChart chart, FileInfo f) {
         context = c;

@@ -62,7 +62,7 @@ class FileListActivity : BaseActivity<FileInfo>(), Monitor {
                 updateProgress(FileInfo(it))
             }
         })
-        converting?.executeOnExecutor(ThreadManager.getInstance().executorService)
+        converting?.execute()
     }
 
     override fun onDestroy() {

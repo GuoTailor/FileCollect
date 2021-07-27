@@ -78,13 +78,13 @@ public class Util {
     }
 
     private static int mNoPermissionIndex = 0;
-    private static int PERMISSION_REQUEST_CODE = 1;
-    private static String[] permissionManifest = {
+    private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final String[] permissionManifest = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
-    private static int[] noPermissionTip = {
+    private static final int[] noPermissionTip = {
             R.string.no_read_phone_state_permission,
             R.string.no_write_external_storage_permission,
             R.string.no_read_external_storage_permission
@@ -506,7 +506,7 @@ public class Util {
 
     public static class SizeFormatter extends ValueFormatter {
 
-        private Context context;
+        private final Context context;
 
         public SizeFormatter(Context c) {
             context = c;

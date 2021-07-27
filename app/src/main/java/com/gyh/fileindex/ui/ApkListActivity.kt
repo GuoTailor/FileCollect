@@ -65,7 +65,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
                 updateProgress(ApkInfo(it))
             }
         })
-        converting?.executeOnExecutor(ThreadManager.getInstance().executorService)
+        converting?.execute()
     }
 
     override fun getLayoutId(viewType: Int): Int {

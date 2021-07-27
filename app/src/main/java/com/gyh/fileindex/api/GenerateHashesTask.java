@@ -25,11 +25,12 @@ import java.security.NoSuchAlgorithmException;
  */
 public class GenerateHashesTask extends AsyncTask<Void, String, String[]> {
 
-    private FileInfo file;
-    private Context context;
-    private TextView md5HashText;
-    private TextView sha256Text;
-    private LinearLayout mMD5LinearLayout, mSHA256LinearLayout;
+    private final FileInfo file;
+    private final Context context;
+    private final TextView md5HashText;
+    private final TextView sha256Text;
+    private final LinearLayout mMD5LinearLayout;
+    private final LinearLayout mSHA256LinearLayout;
     public static final int DEFAULT_BUFFER_SIZE = 8192;
 
     public GenerateHashesTask(FileInfo f, final Context c, final View view) {

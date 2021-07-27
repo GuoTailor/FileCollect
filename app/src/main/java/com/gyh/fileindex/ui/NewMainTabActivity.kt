@@ -7,6 +7,8 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -41,7 +43,6 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
             isGranted.entries.forEach { (k, v) ->
                 Log.d(TAG, "$k: $v")
             }
-
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +96,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         )
         //Util.permissionCheck(this)
         nmka()
-        //Util.startFor("/storage/emulated/0", this)
+        Util.startFor(Environment.getExternalStorageDirectory().path, this)
         initCollapsingToolbar()
         initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
@@ -107,12 +108,22 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
             Toast.LENGTH_SHORT
         ).show()
         TabInfoData.addListener(this)
+        val n = getExternalFilesDir(null)
+        Log.d(TAG, "onCreate: ${n?.absolutePath}")
     }
 
     fun nmka() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                    Log.d(TAG, "nmka: ${it.resultCode} + ${it.data}")
+                }.launch(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION))
+            }
+        }
         for (permission in arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )) {
             when {
                 ContextCompat.checkSelfPermission(this, permission)
                         == PackageManager.PERMISSION_GRANTED -> {
@@ -233,11 +244,11 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
             return
         }
         val uri: Uri? = data.data
-        if (requestCode == 1 && uri != null) {
+        if (uri != null) {
             contentResolver.takePersistableUriPermission(
                 uri, data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION
                         or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            );//关键是这里，这个就是保存这个目录的访问权限
+            )//关键是这里，这个就是保存这个目录的访问权限
         }
     }
 

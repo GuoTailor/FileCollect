@@ -69,7 +69,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
         appbar = AppBar(this, this) { queue ->
             if (queue.isNotEmpty()) {
                 val queueList = data.filter { it.name.contains(queue) }
-                quickAdapter.setData(queueList)
+                quickAdapter.data = queueList
                 quickAdapter.notifyItemRangeRemoved(0, data.size)
                 search = true
             }

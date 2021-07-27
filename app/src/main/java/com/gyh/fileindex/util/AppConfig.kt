@@ -10,7 +10,7 @@ class AppConfig : Application() {
         mInstance = this
         val poolSize = Util.getNumberOfCPUCores()
         Log.d("TAG", "" + Util.getNumberOfCPUCores())
-        if (poolSize > 1)
+        if (poolSize > 4)
             ThreadManager.init(poolSize)
     }
 

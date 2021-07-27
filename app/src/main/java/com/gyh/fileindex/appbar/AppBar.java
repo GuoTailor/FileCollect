@@ -22,7 +22,7 @@ import static android.os.Build.VERSION.SDK_INT;
 
 public class AppBar {
 
-    private int TOOLBAR_START_INSET;
+    private final int TOOLBAR_START_INSET;
 
     private final Toolbar toolbar;
     private final SearchView searchView;

@@ -28,13 +28,13 @@ import static android.os.Build.VERSION.SDK_INT;
 
 public class SearchView {
 
-    private SmokeScreen mainActivity;
-    private AppBar appbar;
-    private Activity activity;
-    private RelativeLayout searchViewLayout;
-    private AppCompatEditText searchViewEditText;
-    private ImageView clearImageView;
-    private ImageView backImageView;
+    private final SmokeScreen mainActivity;
+    private final AppBar appbar;
+    private final Activity activity;
+    private final RelativeLayout searchViewLayout;
+    private final AppCompatEditText searchViewEditText;
+    private final ImageView clearImageView;
+    private final ImageView backImageView;
 
     private boolean enabled = false;
 

@@ -20,7 +20,7 @@ class TabInfo(
         return result
     }
 
-    fun exitSuffix(name: String) = this.suffix.find { name.toLowerCase(Locale.ROOT).endsWith(it) } != null
+    fun exitSuffix(name: String) = this.suffix.find { name.lowercase(Locale.ROOT).endsWith(it) } != null
 
 
     fun addFileInfo(file: File) : File{

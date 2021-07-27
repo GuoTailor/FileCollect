@@ -2,6 +2,7 @@ package com.gyh.fileindex.bean
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
 import com.gyh.fileindex.R
 import com.gyh.fileindex.util.AppConfig
 import com.gyh.fileindex.util.Util
@@ -55,7 +56,7 @@ class ApkInfo(
             //val icon2 = appInfo.loadIcon(pm)
         }
         if (icon == null) {
-            icon = AppConfig.mInstance.getDrawable(R.drawable.ic_launcher_foreground)
+            icon = ContextCompat.getDrawable(AppConfig.mInstance, R.drawable.ic_launcher_foreground)
         }
     }
 }
