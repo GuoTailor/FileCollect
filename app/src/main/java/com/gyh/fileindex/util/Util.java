@@ -27,6 +27,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.documentfile.provider.DocumentFile;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.PieChart;
@@ -53,6 +54,7 @@ import java.util.Objects;
 import static androidx.core.content.ContextCompat.getColor;
 
 public class Util {
+    private static final String TAG = "Util";
     public static final double GB = 1024 * 1024 * 1024;
     public static final double MB = 1024 * 1024;
     public static final double KB = 1024;
@@ -132,6 +134,42 @@ public class Util {
         }
         context.startActivityForResult(intent, PERMISSION_REQUEST_CODE);//开始授权
     }
+
+    /* renamed from: g */
+    public static void m9678g(Activity activity, int i) {
+        Uri parse = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata");
+//        AbstractC1303a e = AbstractC1303a.m3384e(activity, parse);
+        Uri url = DocumentsContract.buildDocumentUriUsingTree(parse, DocumentsContract.getTreeDocumentId(parse));
+        Log.d(TAG, "m9678g: " + url);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, url);
+        }
+        activity.startActivityForResult(intent, i);
+    }
+    public static void startForRoot(Activity context, int REQUEST_CODE_FOR_DIR) {
+        Uri uri1 = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata");
+        DocumentFile documentFile = DocumentFile.fromTreeUri(context, uri1);
+        Intent intent1 = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        intent1.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+        intent1.putExtra(DocumentsContract.EXTRA_INITIAL_URI, documentFile.getUri());
+        context.startActivityForResult(intent1, REQUEST_CODE_FOR_DIR);
+    }
+
+    public static StringBuilder m4770y(String str, String str2) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(str);
+        sb.append(str2);
+        return sb;
+    }
+
 
     //转换至uriTree的路径
     public static String changeToUri(String path) {

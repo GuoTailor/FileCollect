@@ -96,7 +96,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         )
         //Util.permissionCheck(this)
         nmka()
-        Util.startFor(Environment.getExternalStorageDirectory().path, this)
+        Util.startForRoot(this, 1)
         initCollapsingToolbar()
         initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
@@ -245,10 +245,12 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         }
         val uri: Uri? = data.data
         if (uri != null) {
+            Log.d(TAG, "onActivityResult: 通过")
             contentResolver.takePersistableUriPermission(
-                uri, data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                uri,
+                data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             )//关键是这里，这个就是保存这个目录的访问权限
+            TabInfoData.scan()
         }
     }
 

@@ -16,6 +16,7 @@
         android:icon="@drawable/file2"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
+        android:preserveLegacyExternalStorage="true"
         android:roundIcon="@drawable/file2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
