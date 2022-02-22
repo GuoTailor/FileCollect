@@ -23,7 +23,8 @@
         <activity
             android:name=".SettingsActivity"
             android:theme="@style/Theme.AppCompat.Light" />
-        <activity android:name=".ui.NewMainTabActivity">
+        <activity android:name=".ui.NewMainTabActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,8 +35,8 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.gyh.filecollect.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            android:exported="false">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
