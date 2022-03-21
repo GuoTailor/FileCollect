@@ -18,12 +18,12 @@ class SettingsActivity : AppCompatActivity(),
         val args = pref.extras
         val fragment = supportFragmentManager.fragmentFactory.instantiate(
             classLoader,
-            pref.fragment
+            pref.fragment ?: ""
         ).apply {
             arguments = args
             setTargetFragment(caller, 0)
         }
-        Log.d(TAG, "nmka-----new Instantiate")
+        Log.d(TAG, "nmka-----new Instantiate" + pref.fragment)
         // Replace the existing Fragment with the new Fragment
         supportFragmentManager.beginTransaction()
             .replace(R.id.settings, fragment)

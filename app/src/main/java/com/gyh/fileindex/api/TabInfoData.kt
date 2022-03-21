@@ -2,6 +2,7 @@ package com.gyh.fileindex.api
 
 import android.os.AsyncTask
 import androidx.annotation.UiThread
+import com.gyh.fileindex.bean.HybridFile
 import com.gyh.fileindex.bean.TabInfo
 import com.gyh.fileindex.util.ThreadManager
 import java.io.File
@@ -20,7 +21,7 @@ object TabInfoData {
     private val listeners = LinkedList<Monitor>()
     var data: List<TabInfo> = emptyList()
     var fileScan: FileScan? = null
-    val allSuffix: Array<String> by lazy {
+    private val allSuffix: Array<String> by lazy {
         val suffixs = ArrayList<String>()
         data.map { suffixs.addAll(it.suffix) }
         suffixs.toTypedArray()
@@ -65,7 +66,7 @@ object TabInfoData {
         }
     }
 
-    private fun updateProgress(files: Array<out File>) {
+    private fun updateProgress(files: Array<out HybridFile>) {
         operation(files[0])
         listeners.forEach {
             for (file in files) {
@@ -82,9 +83,9 @@ object TabInfoData {
         }
     }
 
-    private fun operation(file: File) {
+    private fun operation(file: HybridFile) {
         data.forEach {
-            if (it.exitSuffix(file.name)) {
+            if (it.exitSuffix(file.name() ?: "")) {
                 it.addFileInfo(file)
             }
         }

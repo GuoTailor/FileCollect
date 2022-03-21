@@ -33,7 +33,7 @@ public class CountItemsOrAndSizeTask extends AsyncTask<Void, Pair<Integer, Long>
         long fileLength = file.getFile().length();
 
         if (file.getFile().isDirectory()) {
-            final int folderLength = file.getFile().list().length;
+            final int folderLength = file.getFile().list().size();
             long folderSize;
             folderSize = Util.getTotalSizeOfFilesInDir(file.getFile());
             items = getText(folderLength, folderSize, false);

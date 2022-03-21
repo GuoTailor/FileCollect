@@ -49,7 +49,7 @@ public class LoadFolderSpaceDataTask extends AsyncTask<Void, Long, Pair<String, 
 
     @Override
     protected Pair<String, List<PieEntry>> doInBackground(Void... params) {
-        long[] dataArray =  Util.getSpaces(file.getFile());
+        long[] dataArray =  Util.getSpaces(file.getFile().length());
 
         if (dataArray[0] != -1 && dataArray[0] != 0) {
             long totalSpace = dataArray[0];

@@ -1,6 +1,7 @@
 package com.gyh.fileindex.bean
 
 import android.graphics.drawable.Drawable
+import androidx.documentfile.provider.DocumentFile
 import com.gyh.fileindex.util.Util
 import java.io.File
 import java.text.SimpleDateFormat
@@ -13,7 +14,7 @@ open class FileInfo(
     var size: String = "未知",
     var intSize: Long = 0,
     var date: String = "未知",
-    var file: File
+    var file: HybridFile
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -45,7 +46,15 @@ open class FileInfo(
         intSize = file.length(),
         path = file.absolutePath,
         name = file.name,
-        file = file
+        file = HybridFile(file)
     )
 
+    constructor(file: HybridFile) : this(
+        date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(file.lastModified()),
+        size = Util.getNetFileSizeDescription(file.length()),
+        intSize = file.length(),
+        path = file.absolutePath(),
+        name = file.name() ?: "",
+        file = file
+    )
 }

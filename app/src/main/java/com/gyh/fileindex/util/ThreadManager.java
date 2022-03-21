@@ -20,7 +20,8 @@ public class ThreadManager {
                 TimeUnit.MINUTES, new LinkedBlockingQueue<>(128), (run, executor) -> {
             if (!executor.isShutdown()) {
                 try {
-                    executor.getQueue().put(run);
+                    boolean offer = executor.getQueue().offer(run, 3, TimeUnit.SECONDS);
+                    if (!offer) run.run();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -103,7 +103,7 @@ public class GenerateHashesTask extends AsyncTask<Void, String, String[]> {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         byte[] input = new byte[DEFAULT_BUFFER_SIZE];
         int length;
-        InputStream inputStream = new FileInputStream(file.getFile());
+        InputStream inputStream = file.getFile().getOutputStream(context);
         while ((length = inputStream.read(input)) != -1) {
             if (length > 0)
                 messageDigest.update(input, 0, length);
@@ -124,7 +124,7 @@ public class GenerateHashesTask extends AsyncTask<Void, String, String[]> {
     }
 
     private byte[] createChecksum() throws Exception {
-        InputStream fis = new FileInputStream(file.getFile());
+        InputStream fis = file.getFile().getOutputStream(context);
 
         byte[] buffer = new byte[8192];
         MessageDigest complete = MessageDigest.getInstance("MD5");

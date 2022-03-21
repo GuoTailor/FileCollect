@@ -12,6 +12,7 @@ import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.ApkInfo
+import com.gyh.fileindex.bean.HybridFile
 import com.gyh.fileindex.util.Util
 import java.io.File
 
@@ -20,7 +21,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
     private var converting: AsynchronizedTask<ApkInfo>? = null
     override lateinit var sortAdapter: SortAdapter<ApkInfo>
 
-    override fun updateProgress(vararg files: File) {
+    override fun updateProgress(vararg files: HybridFile) {
         for (file in files) {
             val apkInfo = ApkInfo(file)
             data.add(apkInfo)
@@ -41,7 +42,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
         Util.showPropertiesDialog(baseFile, this)
     }
 
-    override fun isCare(file: File) = tabInfo.exitSuffix(file.name)
+    override fun isCare(file: HybridFile) = tabInfo.exitSuffix(file.name() ?: "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

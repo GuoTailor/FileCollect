@@ -21,7 +21,7 @@ class ApkInfo(
     intSize: Long = 0,
     date: String = "未知",
     name: String = "未知",
-    file: File
+    file: HybridFile
 ) : FileInfo(name, icon, path, size, intSize, date, file) {
 
     constructor(file: File) : this(
@@ -30,7 +30,7 @@ class ApkInfo(
         intSize = file.length(),
         path = file.absolutePath,
         name = file.name,
-        file = file
+        file = HybridFile(file)
     ) {
         val pm = AppConfig.mInstance.packageManager
         val pkgInfo = pm.getPackageArchiveInfo(file.absolutePath, PackageManager.GET_ACTIVITIES)
@@ -58,5 +58,18 @@ class ApkInfo(
         if (icon == null) {
             icon = ContextCompat.getDrawable(AppConfig.mInstance, R.drawable.ic_launcher_foreground)
         }
+    }
+
+    constructor(file: HybridFile) :this(
+        date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(file.lastModified()),
+        size = Util.getNetFileSizeDescription(file.length()),
+        intSize = file.length(),
+        path = file.absolutePath(),
+        name = file.name() ?: "",
+        file = file
+    ) {
+        icon = ContextCompat.getDrawable(AppConfig.mInstance, R.drawable.ic_launcher_foreground)
+        appName = name
+        currentVersion = "未知"
     }
 }

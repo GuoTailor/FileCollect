@@ -212,7 +212,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
 
     override fun onBackPressed() {
         if (search) {
-            quickAdapter.setData(data)
+            quickAdapter.data = data
             quickAdapter.notifyItemRangeRemoved(0, data.size)
             search = false
         } else {

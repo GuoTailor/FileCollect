@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.UriPermission;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -20,10 +21,12 @@ import android.text.SpannableString;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -43,12 +46,14 @@ import com.gyh.fileindex.api.GenerateHashesTask;
 import com.gyh.fileindex.api.LoadFolderSpaceDataTask;
 import com.gyh.fileindex.bean.ApkInfo;
 import com.gyh.fileindex.bean.FileInfo;
+import com.gyh.fileindex.bean.HybridFile;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import static androidx.core.content.ContextCompat.getColor;
@@ -58,6 +63,7 @@ public class Util {
     public static final double GB = 1024 * 1024 * 1024;
     public static final double MB = 1024 * 1024;
     public static final double KB = 1024;
+    public static final String rootFile = Environment.getExternalStorageDirectory().getPath() + "/";
 
     public static String getNetFileSizeDescription(long size) {
         StringBuilder bytes = new StringBuilder();
@@ -135,22 +141,15 @@ public class Util {
         context.startActivityForResult(intent, PERMISSION_REQUEST_CODE);//开始授权
     }
 
-    /* renamed from: g */
-    public static void m9678g(Activity activity, int i) {
-        Uri parse = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata");
-//        AbstractC1303a e = AbstractC1303a.m3384e(activity, parse);
-        Uri url = DocumentsContract.buildDocumentUriUsingTree(parse, DocumentsContract.getTreeDocumentId(parse));
-        Log.d(TAG, "m9678g: " + url);
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-                | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, url);
+    public static boolean isGrant(Context context) {
+        for (UriPermission persistedUriPermission : context.getContentResolver().getPersistedUriPermissions()) {
+            if (persistedUriPermission.isReadPermission() && persistedUriPermission.getUri().toString().equals("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata")) {
+                return true;
+            }
         }
-        activity.startActivityForResult(intent, i);
+        return false;
     }
+
     public static void startForRoot(Activity context, int REQUEST_CODE_FOR_DIR) {
         Uri uri1 = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata");
         DocumentFile documentFile = DocumentFile.fromTreeUri(context, uri1);
@@ -163,21 +162,20 @@ public class Util {
         context.startActivityForResult(intent1, REQUEST_CODE_FOR_DIR);
     }
 
-    public static StringBuilder m4770y(String str, String str2) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(str);
-        sb.append(str2);
-        return sb;
-    }
-
-
     //转换至uriTree的路径
     public static String changeToUri(String path) {
         if (path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);
         }
-        String path2 = path.replace("/storage/emulated/0/", "").replace("/", "%2F");
-        return "content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3A" + path2;
+        String path2 = path.replace(rootFile, "").replace("/", "%2F");
+        return "content://com.android.externalstorage.documents/tree/primary%3A" + path2;
+    }
+
+    public static String treeToPath(String path) {
+        String path2;
+        path2 = path.replace("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3A", rootFile);
+        path2 = path2.replace("%2F", "/");
+        return path2;
     }
 
     public static int getNumberOfCPUCores() {
@@ -251,6 +249,22 @@ public class Util {
         return total;
     }
 
+    /**
+     * 获取文件夹大小
+     *
+     * @param file File实例
+     * @return long
+     */
+    public static long getTotalSizeOfFilesInDir(HybridFile file) {
+        if (file.isFile())
+            return file.length();
+        final List<HybridFile> children = file.listFiles();
+        long total = 0;
+        for (final HybridFile child : children)
+            total += getTotalSizeOfFilesInDir(child);
+        return total;
+    }
+
     public static long[] getSpaces(File hFile) {
         long totalSpace = hFile.getTotalSpace();
         long freeSpace = hFile.getUsableSpace();
@@ -264,6 +278,12 @@ public class Util {
         return new long[]{totalSpace, freeSpace, fileSize};
     }
 
+    public static long[] getSpaces(Long fileSize) {
+        File file = new File(rootFile);
+        long totalSpace = file.getTotalSpace();
+        long freeSpace = file.getUsableSpace();
+        return new long[]{totalSpace, freeSpace, fileSize};
+    }
 
     /**
      * 显示apk详情弹窗
@@ -585,6 +605,7 @@ public class Util {
         }
 
         Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //设置intent的Action属性
         intent.setAction(Intent.ACTION_VIEW);
@@ -597,7 +618,50 @@ public class Util {
         }
 
         //获取文件file的MIME类型
-        String type = getMIMEType(file);
+        String type = getMimeType(file.getName(), false);
+        //设置intent的data和Type属性。
+        intent.setDataAndType(uri, type);
+        //跳转
+        try {
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Log.e("FileUtil", e.getMessage(), e);
+            Toast.makeText(context, "找不到打开此文件的应用！", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 调用系统应用打开文件
+     *
+     * @param context context
+     * @param file    file
+     */
+    public static void openFile(HybridFile file, Context context) {
+        if (!file.exists()) {
+            //如果文件不存在
+            Toast.makeText(context, "打开失败，原因：文件已经被移动或者删除", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //设置intent的Action属性
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri;
+        if (file.getType() == HybridFile.FILE) {
+            // 支持Android7.0，Android 7.0以后，用了Content Uri 替换了原本的File Uri
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                uri = getUri(context, intent, file.getFile());
+            } else {
+                uri = Uri.fromFile(file.getFile());
+            }
+        } else {
+            uri = file.getDocumentFile().getUri();
+        }
+
+        //获取文件file的MIME类型
+        String type = getMimeType(file.name(), false);
         //设置intent的data和Type属性。
         intent.setDataAndType(uri, type);
         //跳转
@@ -632,12 +696,11 @@ public class Util {
     /**
      * 根据文件后缀回去MIME类型
      *
-     * @param file file
+     * @param fName 文件名字
      * @return string
      */
-    private static String getMIMEType(File file) {
+    private static String getMIMEType(String fName) {
         String type = "*/*";
-        String fName = file.getName();
 
         //获取后缀名前的分隔符"."在fName中的位置。
         int dotIndex = fName.lastIndexOf(".");
@@ -658,6 +721,46 @@ public class Util {
                 break;
             }
         }
+        return type;
+    }
+
+    /**
+     * Helper method for {@link #getMimeType(String, boolean)} to calculate the last '.' extension of
+     * files
+     *
+     * @param path the path of file
+     * @return extension extracted from name in lowercase
+     */
+    public static String getExtension(@Nullable String path) {
+        if (path != null && path.contains("."))
+            return path.substring(path.lastIndexOf(".") + 1).toLowerCase();
+        else return "";
+    }
+
+    /**
+     * Get Mime Type of a file
+     *
+     * @param path the file of which mime type to get
+     * @return Mime type in form of String
+     */
+    public static String getMimeType(String path, boolean isDirectory) {
+        if (isDirectory) {
+            return null;
+        }
+
+        String type = "*/*";
+        final String extension = getExtension(path);
+
+        // mapping extension to system mime types
+        if (!extension.isEmpty()) {
+            final String extensionLowerCase = extension.toLowerCase(Locale.getDefault());
+            final MimeTypeMap mime = MimeTypeMap.getSingleton();
+            type = mime.getMimeTypeFromExtension(extensionLowerCase);
+            if (type == null) {
+                type = getMIMEType(extensionLowerCase);
+            }
+        }
+        if (type == null) type = "*/*";
         return type;
     }
 

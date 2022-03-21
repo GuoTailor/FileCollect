@@ -1,17 +1,22 @@
 package com.gyh.fileindex.api
 
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Environment
 import android.util.Log
+import androidx.documentfile.provider.DocumentFile
+import com.gyh.fileindex.bean.HybridFile
+import com.gyh.fileindex.util.AppConfig
 import com.gyh.fileindex.util.ThreadManager
+import com.gyh.fileindex.util.Util
 import eu.chainfire.libsuperuser.Shell
 import java.io.File
 
 
 class FileScan(
-    private val updateProgress: ((Array<out File>) -> Unit)? = null,
+    private val updateProgress: ((Array<out HybridFile>) -> Unit)? = null,
     private val updateResult: ((String) -> Unit)? = null
-) : AsyncTask<String, File, String>() {
+) : AsyncTask<String, HybridFile, String>() {
     private var shellThreaded: Shell.Threaded = Shell.Builder().openThreaded()
     override fun doInBackground(vararg params: String): String {
         val file = Environment.getExternalStorageDirectory()
@@ -22,7 +27,7 @@ class FileScan(
         return "完成 用时: ${System.currentTimeMillis() - time}ms"
     }
 
-    override fun onProgressUpdate(vararg values: File) {
+    override fun onProgressUpdate(vararg values: HybridFile) {
         updateProgress?.invoke(values)
     }
 
@@ -45,11 +50,30 @@ class FileScan(
 
                 override fun onSTDOUT(line: String) {
                     ThreadManager.getInstance().execute {
-                        publishProgress(File(line))
+                        publishProgress(HybridFile(File(line)))
                     }
                 }
 
             })
+            val documentFile = DocumentFile.fromTreeUri(
+                AppConfig.mInstance,
+                Uri.parse(Util.changeToUri("/storage/emulated/0/Android/data"))
+            ) ?: return
+            findFileByDocumentFile(documentFile)
+        }
+    }
+
+    fun findFileByDocumentFile(documentFile: DocumentFile) {
+        if (documentFile.isDirectory) {
+            for (listFile in documentFile.listFiles()) {
+                ThreadManager.getInstance().execute {
+                    findFileByDocumentFile(listFile)
+                }
+            }
+        } else {
+            ThreadManager.getInstance().execute {
+                publishProgress(HybridFile(documentFile))
+            }
         }
     }
 

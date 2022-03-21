@@ -28,6 +28,7 @@ import com.gyh.fileindex.R
 import com.gyh.fileindex.SettingsActivity
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.TabInfoData
+import com.gyh.fileindex.bean.HybridFile
 import com.gyh.fileindex.bean.TabInfo
 import com.gyh.fileindex.databinding.ActivityMainTabBinding
 import com.gyh.fileindex.util.Util
@@ -96,7 +97,9 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         )
         //Util.permissionCheck(this)
         nmka()
-        Util.startForRoot(this, 1)
+        if (!Util.isGrant(this) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Util.startForRoot(this, 1)
+        }
         initCollapsingToolbar()
         initItemGrid()
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
@@ -247,22 +250,21 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         if (uri != null) {
             Log.d(TAG, "onActivityResult: 通过")
             contentResolver.takePersistableUriPermission(
-                uri,
-                data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                uri, data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             )//关键是这里，这个就是保存这个目录的访问权限
             TabInfoData.scan()
         }
     }
 
-    override fun updateProgress(vararg files: File) {
+    override fun updateProgress(vararg files: HybridFile) {
         TabInfoData.data.forEachIndexed { index, it ->
-            if (it.exitSuffix(files[0].name)) {
+            if (it.exitSuffix(files[0].name() ?: "")) {
                 quickAdapter.notifyItemChanged(index, 2)
             }
         }
     }
 
-    override fun isCare(file: File) = true
+    override fun isCare(file: HybridFile) = true
 
     override fun updateResult(result: String) =
         Toast.makeText(this, result, Toast.LENGTH_SHORT).show()

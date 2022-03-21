@@ -10,6 +10,7 @@ import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.FileInfo
+import com.gyh.fileindex.bean.HybridFile
 import com.gyh.fileindex.util.ThreadManager
 import java.io.File
 
@@ -29,7 +30,7 @@ class FileListActivity : BaseActivity<FileInfo>(), Monitor {
         holder.getView<TextView>(R.id.size)?.text = data.size
     }
 
-    override fun updateProgress(vararg files: File) {
+    override fun updateProgress(vararg files: HybridFile) {
         for (file in files) {
             val fileInfo = FileInfo(file)
             data.add(fileInfo)
@@ -46,7 +47,7 @@ class FileListActivity : BaseActivity<FileInfo>(), Monitor {
 
     override fun sort() = sortAdapter.sort(data)
 
-    override fun isCare(file: File) = tabInfo.exitSuffix(file.name)
+    override fun isCare(file: HybridFile) = tabInfo.exitSuffix(file.name() ?: "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

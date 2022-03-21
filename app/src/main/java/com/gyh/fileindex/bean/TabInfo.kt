@@ -6,7 +6,7 @@ import java.util.*
 
 class TabInfo(
     val suffix: Array<String>,
-    val fileInfos: MutableList<File>,
+    val fileInfos: MutableList<HybridFile>,
     var icon: Drawable? = null, //TODO 使用默认图标代替
     var count: Int = 0,
     var text: String
@@ -23,7 +23,7 @@ class TabInfo(
     fun exitSuffix(name: String) = this.suffix.find { name.lowercase(Locale.ROOT).endsWith(it) } != null
 
 
-    fun addFileInfo(file: File) : File{
+    fun addFileInfo(file: HybridFile) : HybridFile{
         fileInfos.add(file)
         count++
         return file
