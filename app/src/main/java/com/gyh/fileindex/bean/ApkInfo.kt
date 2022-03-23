@@ -24,52 +24,46 @@ class ApkInfo(
     file: HybridFile
 ) : FileInfo(name, icon, path, size, intSize, date, file) {
 
-    constructor(file: File) : this(
-        date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(file.lastModified()),
-        size = Util.getNetFileSizeDescription(file.length()),
-        intSize = file.length(),
-        path = file.absolutePath,
-        name = file.name,
-        file = HybridFile(file)
+    constructor(hybridFile: HybridFile) :this(
+        date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(hybridFile.lastModified()),
+        size = Util.getNetFileSizeDescription(hybridFile.length()),
+        intSize = hybridFile.length(),
+        path = hybridFile.absolutePath(),
+        name = hybridFile.name() ?: "",
+        file = hybridFile
     ) {
-        val pm = AppConfig.mInstance.packageManager
-        val pkgInfo = pm.getPackageArchiveInfo(file.absolutePath, PackageManager.GET_ACTIVITIES)
-        if (pkgInfo != null) {
-            val appInfo = pkgInfo.applicationInfo
-            /* 必须加这两句，不然下面icon获取是default icon而不是应用包的icon */
-            appInfo.sourceDir = file.absolutePath
-            appInfo.publicSourceDir = file.absolutePath
+        if (hybridFile.isFile()) {
+            val file = hybridFile.file!!
+            val pm = AppConfig.mInstance.packageManager
+            val pkgInfo = pm.getPackageArchiveInfo(file.absolutePath, PackageManager.GET_ACTIVITIES)
+            if (pkgInfo != null) {
+                val appInfo = pkgInfo.applicationInfo
+                /* 必须加这两句，不然下面icon获取是default icon而不是应用包的icon */
+                appInfo.sourceDir = file.absolutePath
+                appInfo.publicSourceDir = file.absolutePath
 
-            appName = pm.getApplicationLabel(appInfo).toString()// 得到应用名
-            packageName = appInfo.packageName // 得到包名
-            version = pkgInfo.versionName ?: "未知" // 得到版本信息
-            try {
-                currentVersion = "已安装：" +
-                        pm.getPackageInfo(
-                            appInfo.packageName,
-                            PackageManager.GET_ACTIVITIES
-                        ).versionName
-            } catch (e: PackageManager.NameNotFoundException) {
+                appName = pm.getApplicationLabel(appInfo).toString()// 得到应用名
+                packageName = appInfo.packageName // 得到包名
+                version = pkgInfo.versionName ?: "未知" // 得到版本信息
+                try {
+                    currentVersion = "已安装：" +
+                            pm.getPackageInfo(
+                                appInfo.packageName,
+                                PackageManager.GET_ACTIVITIES
+                            ).versionName
+                } catch (e: PackageManager.NameNotFoundException) {
+                }
+                /* icon1和icon2其实是一样的 */
+                icon = pm.getApplicationIcon(appInfo)// 得到图标信息
+                //val icon2 = appInfo.loadIcon(pm)
             }
-            /* icon1和icon2其实是一样的 */
-            icon = pm.getApplicationIcon(appInfo)// 得到图标信息
-            //val icon2 = appInfo.loadIcon(pm)
-        }
-        if (icon == null) {
+            if (icon == null) {
+                icon = ContextCompat.getDrawable(AppConfig.mInstance, R.drawable.ic_launcher_foreground)
+            }
+        } else {
             icon = ContextCompat.getDrawable(AppConfig.mInstance, R.drawable.ic_launcher_foreground)
+            appName = name
+            currentVersion = "未知"
         }
-    }
-
-    constructor(file: HybridFile) :this(
-        date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(file.lastModified()),
-        size = Util.getNetFileSizeDescription(file.length()),
-        intSize = file.length(),
-        path = file.absolutePath(),
-        name = file.name() ?: "",
-        file = file
-    ) {
-        icon = ContextCompat.getDrawable(AppConfig.mInstance, R.drawable.ic_launcher_foreground)
-        appName = name
-        currentVersion = "未知"
     }
 }

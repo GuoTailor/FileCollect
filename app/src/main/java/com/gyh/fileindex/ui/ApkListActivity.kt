@@ -42,7 +42,9 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
         Util.showPropertiesDialog(baseFile, this)
     }
 
-    override fun isCare(file: HybridFile) = tabInfo.exitSuffix(file.name() ?: "")
+    override fun isCare(file: HybridFile): Boolean =
+        tabInfo.exitSuffix(file.name() ?: "") || (file.name() ?: "").contains(".apk", true)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

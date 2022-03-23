@@ -737,6 +737,12 @@ public class Util {
         else return "";
     }
 
+    public static String getExtension2(@Nullable String path) {
+        if (path != null && path.contains("."))
+            return path.substring(path.lastIndexOf(".")).toLowerCase();
+        else return "";
+    }
+
     /**
      * Get Mime Type of a file
      *

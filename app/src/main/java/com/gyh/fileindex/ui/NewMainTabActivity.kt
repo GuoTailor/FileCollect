@@ -258,7 +258,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
 
     override fun updateProgress(vararg files: HybridFile) {
         TabInfoData.data.forEachIndexed { index, it ->
-            if (it.exitSuffix(files[0].name() ?: "")) {
+            if (it.exitSuffix(files[0].name() ?: "") || (files[0].name() ?: "").contains(".apk", true)) {
                 quickAdapter.notifyItemChanged(index, 2)
             }
         }

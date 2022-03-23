@@ -51,6 +51,7 @@ object TabInfoData {
                 clean()
                 fileScan?.executeOnExecutor(ThreadManager.getInstance().executorService, *allSuffix)
             }
+            else -> {}
         }
         return Status.OK
     }
@@ -101,6 +102,7 @@ object TabInfoData {
          * Indicates that the task is running.
          */
         RUNNING,
+
         /**
          * Indicates that [AsyncTask.onPostExecute] has finished.
          */

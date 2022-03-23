@@ -11,6 +11,7 @@ import com.gyh.fileindex.util.ThreadManager
 import com.gyh.fileindex.util.Util
 import eu.chainfire.libsuperuser.Shell
 import java.io.File
+import java.util.*
 
 
 class FileScan(
@@ -55,26 +56,40 @@ class FileScan(
                 }
 
             })
-            val documentFile = DocumentFile.fromTreeUri(
+            DocumentFile.fromTreeUri(
                 AppConfig.mInstance,
                 Uri.parse(Util.changeToUri("/storage/emulated/0/Android/data"))
-            ) ?: return
-            findFileByDocumentFile(documentFile)
+            )?.let {
+                findFileByDocumentFile(it, *params, ".1")
+            }
         }
     }
 
-    fun findFileByDocumentFile(documentFile: DocumentFile) {
+    private fun findFileByDocumentFile(documentFile: DocumentFile, vararg params: String) {
         if (documentFile.isDirectory) {
             for (listFile in documentFile.listFiles()) {
-                ThreadManager.getInstance().execute {
-                    findFileByDocumentFile(listFile)
-                }
+                if (listFile.uri.toString().startsWith("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3AAndroid%2Fdata%2Fcom.tencent.mm"))
+                    ThreadManager.getInstance().execute {
+                        findFileByDocumentFile(listFile, *params)
+                    }
             }
         } else {
-            ThreadManager.getInstance().execute {
+            val name = documentFile.name!!
+            val extension = Util.getExtension2(name)
+            if (params.contains(extension, name)) {
+                Log.i("FileScan", "findFileByDocumentFile: ${name} $extension")
                 publishProgress(HybridFile(documentFile))
             }
         }
+    }
+
+    fun Array<out String>.contains(element: String, name: String): Boolean {
+        if (element.isEmpty()) return false
+        if (element == ".1" && name.contains(".apk", true)) return true
+        this.forEach {
+            if (it == element) return true
+        }
+        return false
     }
 
     fun shutdown() {

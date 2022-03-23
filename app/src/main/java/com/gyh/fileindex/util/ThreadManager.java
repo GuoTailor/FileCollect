@@ -19,12 +19,8 @@ public class ThreadManager {
         executorService = new ThreadPoolExecutor(poolSize, poolSize, 0L,
                 TimeUnit.MINUTES, new LinkedBlockingQueue<>(128), (run, executor) -> {
             if (!executor.isShutdown()) {
-                try {
-                    boolean offer = executor.getQueue().offer(run, 3, TimeUnit.SECONDS);
-                    if (!offer) run.run();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                boolean offer = executor.getQueue().offer(run);
+                if (!offer) run.run();
             }
         });
     }
