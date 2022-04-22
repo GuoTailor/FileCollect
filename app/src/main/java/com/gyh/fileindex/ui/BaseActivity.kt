@@ -164,7 +164,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
                 if (direction == SwipeRecyclerView.RIGHT_DIRECTION) {
                     when (menuPosition) {
                         0 -> {
-                            Util.openFile(File(data[position].path), this)
+                            Util.openFile(data[position].file, this)
                         }
                         1 -> {
                             val fileInfo = data[position]

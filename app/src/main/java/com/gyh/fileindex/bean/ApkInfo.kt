@@ -32,7 +32,7 @@ class ApkInfo(
         name = hybridFile.name() ?: "",
         file = hybridFile
     ) {
-        if (hybridFile.isFile()) {
+        if (hybridFile.type == HybridFile.FILE) {
             val file = hybridFile.file!!
             val pm = AppConfig.mInstance.packageManager
             val pkgInfo = pm.getPackageArchiveInfo(file.absolutePath, PackageManager.GET_ACTIVITIES)
