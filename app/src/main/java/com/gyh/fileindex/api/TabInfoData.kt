@@ -1,13 +1,9 @@
 package com.gyh.fileindex.api
 
-import android.os.AsyncTask
 import androidx.annotation.UiThread
 import com.gyh.fileindex.bean.HybridFile
 import com.gyh.fileindex.bean.TabInfo
-import com.gyh.fileindex.util.ThreadManager
-import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 object TabInfoData {
@@ -36,24 +32,19 @@ object TabInfoData {
     }
 
     @UiThread
-    fun scan(): Status {
+    fun scan(): AsynchTask.Status {
         if (fileScan == null) {
             fileScan = FileScan(::updateProgress, ::updateResult)
         }
-        when (fileScan?.status) {
-            AsyncTask.Status.RUNNING -> return Status.RUNNING
-            AsyncTask.Status.PENDING -> {
+        return when (fileScan?.status()) {
+            AsynchTask.Status.RUNNING -> AsynchTask.Status.RUNNING
+            AsynchTask.Status.PENDING -> {
                 clean()
-                fileScan?.executeOnExecutor(ThreadManager.getInstance().executorService, *allSuffix)
+                fileScan?.execute(*allSuffix)
+                AsynchTask.Status.OK
             }
-            AsyncTask.Status.FINISHED -> {
-                fileScan = FileScan(::updateProgress, ::updateResult)
-                clean()
-                fileScan?.executeOnExecutor(ThreadManager.getInstance().executorService, *allSuffix)
-            }
-            else -> {}
+            else -> AsynchTask.Status.OK
         }
-        return Status.OK
     }
 
     fun getTabInfo(tag: String): TabInfo {
@@ -96,17 +87,5 @@ object TabInfoData {
      * 关闭文件扫描
      */
     fun shutdown() = fileScan?.shutdown()
-
-    enum class Status {
-        /**
-         * Indicates that the task is running.
-         */
-        RUNNING,
-
-        /**
-         * Indicates that [AsyncTask.onPostExecute] has finished.
-         */
-        OK
-    }
 
 }

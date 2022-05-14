@@ -64,7 +64,7 @@ open class SortAdapter<T : FileInfo>(val context: Context, fileKey: String) {
     fun setOrder(sort: String, order: String) {
         this.sort = sort
         this.order = order
-        ThreadManager.getInstance().execute {
+        ThreadManager.getQuickPool().execute {
             sharedPreferences.edit().putString("sort", sort).putString("order", order).commit()
         }
     }

@@ -26,13 +26,13 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
 import com.gyh.fileindex.SettingsActivity
+import com.gyh.fileindex.api.AsynchTask
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.HybridFile
 import com.gyh.fileindex.bean.TabInfo
 import com.gyh.fileindex.databinding.ActivityMainTabBinding
 import com.gyh.fileindex.util.Util
-import java.io.File
 
 
 class NewMainTabActivity : AppCompatActivity(), Monitor {
@@ -105,7 +105,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         quickAdapter.notifyItemRangeRemoved(0, TabInfoData.data.size)
         Util.showMainDialog(this, binding.mainChart)
         val status = TabInfoData.scan()
-        if (status == TabInfoData.Status.RUNNING) Toast.makeText(
+        if (status == AsynchTask.Status.RUNNING) Toast.makeText(
             this,
             "正在扫描",
             Toast.LENGTH_SHORT
@@ -231,7 +231,7 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         for ((index, value) in permissions.withIndex()) {
             if (value == Manifest.permission.READ_EXTERNAL_STORAGE && grantResults[index] == 0) {
                 val status = TabInfoData.scan()
-                if (status == TabInfoData.Status.RUNNING) Toast.makeText(
+                if (status == AsynchTask.Status.RUNNING) Toast.makeText(
                     this,
                     "正在扫描",
                     Toast.LENGTH_SHORT
@@ -250,7 +250,8 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
         if (uri != null) {
             Log.d(TAG, "onActivityResult: 通过")
             contentResolver.takePersistableUriPermission(
-                uri, data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                uri,
+                data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             )//关键是这里，这个就是保存这个目录的访问权限
             TabInfoData.scan()
         }
@@ -258,7 +259,11 @@ class NewMainTabActivity : AppCompatActivity(), Monitor {
 
     override fun updateProgress(vararg files: HybridFile) {
         TabInfoData.data.forEachIndexed { index, it ->
-            if (it.exitSuffix(files[0].name() ?: "") || (files[0].name() ?: "").contains(".apk", true)) {
+            if (it.exitSuffix(files[0].name() ?: "") || (files[0].name() ?: "").contains(
+                    ".apk",
+                    true
+                )
+            ) {
                 quickAdapter.notifyItemChanged(index, 2)
             }
         }

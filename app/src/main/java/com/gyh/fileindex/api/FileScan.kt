@@ -1,7 +1,6 @@
 package com.gyh.fileindex.api
 
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Environment
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
@@ -11,32 +10,37 @@ import com.gyh.fileindex.util.ThreadManager
 import com.gyh.fileindex.util.Util
 import eu.chainfire.libsuperuser.Shell
 import java.io.File
-import java.util.*
 
 
 class FileScan(
-    private val updateProgress: ((Array<out HybridFile>) -> Unit)? = null,
-    private val updateResult: ((String) -> Unit)? = null
-) : AsyncTask<String, HybridFile, String>() {
+    updateProgress: ((Array<out HybridFile>) -> Unit)? = null,
+    updateResult: ((String) -> Unit)? = null
+) {
+    private var converting: AsynchTask<HybridFile> =
+        AsynchTask(
+            updateProgress,
+            updateResult,
+            { this@FileScan.doInBackground(this, *it) },
+            ThreadManager.getWorkPool()
+        )
+
     private var shellThreaded: Shell.Threaded = Shell.Builder().openThreaded()
-    override fun doInBackground(vararg params: String): String {
+
+    fun execute(vararg params: String) {
+        converting.execute(*params)
+    }
+
+    fun status() = converting.status
+
+    private fun doInBackground(task: AsynchTask<HybridFile>, vararg params: String): String {
         val file = Environment.getExternalStorageDirectory()
         val time = System.currentTimeMillis()
-        scanFile(file.absolutePath, *params)
-        //scanFile(file, *params)
+        scanFile(file.absolutePath, task, *params)
         Log.d("TIME ", "" + (System.currentTimeMillis() - time))
         return "完成 用时: ${System.currentTimeMillis() - time}ms"
     }
 
-    override fun onProgressUpdate(vararg values: HybridFile) {
-        updateProgress?.invoke(values)
-    }
-
-    override fun onPostExecute(result: String) {
-        updateResult?.invoke(result)
-    }
-
-    private fun scanFile(path: String, vararg params: String) {
+    private fun scanFile(path: String, task: AsynchTask<HybridFile>, vararg params: String) {
         if (params.isNotEmpty()) {
             val cmds = StringBuilder("find $path -name ''")
             for (cmd in params) {
@@ -50,8 +54,8 @@ class FileScan(
                 }
 
                 override fun onSTDOUT(line: String) {
-                    ThreadManager.getInstance().execute {
-                        publishProgress(HybridFile(File(line)))
+                    ThreadManager.getWorkPool().execute {
+                        task.publishProgress(HybridFile(File(line)))
                     }
                 }
 
@@ -60,25 +64,31 @@ class FileScan(
                 AppConfig.mInstance,
                 Uri.parse(Util.changeToUri("/storage/emulated/0/Android/data"))
             )?.let {
-                findFileByDocumentFile(it, *params, ".1")
+                findFileByDocumentFile(it, task, *params, ".1")
             }
         }
     }
 
-    private fun findFileByDocumentFile(documentFile: DocumentFile, vararg params: String) {
+    private fun findFileByDocumentFile(
+        documentFile: DocumentFile,
+        task: AsynchTask<HybridFile>,
+        vararg params: String
+    ) {
         if (documentFile.isDirectory) {
             for (listFile in documentFile.listFiles()) {
-                if (listFile.uri.toString().startsWith("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3AAndroid%2Fdata%2Fcom.tencent.mm"))
-                    ThreadManager.getInstance().execute {
-                        findFileByDocumentFile(listFile, *params)
+                if (listFile.uri.toString()
+                        .startsWith("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3AAndroid%2Fdata%2Fcom.tencent.mm")
+                )
+                    ThreadManager.getWorkPool().execute {
+                        findFileByDocumentFile(listFile, task, *params)
                     }
             }
         } else {
             val name = documentFile.name!!
             val extension = Util.getExtension2(name)
             if (params.contains(extension, name)) {
-                Log.i("FileScan", "findFileByDocumentFile: ${name} $extension")
-                publishProgress(HybridFile(documentFile))
+                Log.i("FileScan", "findFileByDocumentFile: $name $extension")
+                task.publishProgress(HybridFile(documentFile))
             }
         }
     }
@@ -94,6 +104,6 @@ class FileScan(
 
     fun shutdown() {
         shellThreaded.close()
+        converting.cancel(true)
     }
-
 }

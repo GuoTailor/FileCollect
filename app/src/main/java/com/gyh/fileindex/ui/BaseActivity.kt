@@ -20,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
+import com.gyh.fileindex.api.AsynchTask
 import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.appbar.AppBar
@@ -55,7 +56,7 @@ abstract class BaseActivity<T : FileInfo> : AppCompatActivity(), SmokeScreen {
         binding.fab.setOnClickListener { view ->
             if (search) return@setOnClickListener
             val previousSize = data.size
-            if (TabInfoData.scan() == TabInfoData.Status.RUNNING) {
+            if (TabInfoData.scan() == AsynchTask.Status.RUNNING) {
                 Snackbar.make(view, "正在扫描", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
                 return@setOnClickListener

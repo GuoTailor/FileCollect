@@ -5,19 +5,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
-import com.gyh.fileindex.api.AsynchronizedTask
+import com.gyh.fileindex.api.AsynchTask
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.FileInfo
 import com.gyh.fileindex.bean.HybridFile
-import com.gyh.fileindex.util.ThreadManager
-import java.io.File
 
 class FileListActivity : BaseActivity<FileInfo>(), Monitor {
     override var data = ArrayList<FileInfo>()
     override lateinit var sortAdapter :SortAdapter<FileInfo>
-    private var converting: AsynchronizedTask<FileInfo>? = null
+    private var converting: AsynchTask<FileInfo>? = null
 
     override fun getLayoutId(viewType: Int): Int {
         return R.layout.file_item
@@ -53,7 +51,7 @@ class FileListActivity : BaseActivity<FileInfo>(), Monitor {
         super.onCreate(savedInstanceState)
         TabInfoData.addListener(this)
         sortAdapter = SortAdapter(this, tabInfo.text)
-        converting = AsynchronizedTask({
+        converting = AsynchTask({
             data.add(it[0])
             sortAdapter.sort(data)
             val index = data.indexOf(it[0])

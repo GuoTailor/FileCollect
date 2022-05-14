@@ -6,19 +6,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.gyh.fileindex.QuickAdapter
 import com.gyh.fileindex.R
-import com.gyh.fileindex.api.AsynchronizedTask
-import com.gyh.fileindex.util.ThreadManager
+import com.gyh.fileindex.api.AsynchTask
 import com.gyh.fileindex.api.Monitor
 import com.gyh.fileindex.api.SortAdapter
 import com.gyh.fileindex.api.TabInfoData
 import com.gyh.fileindex.bean.ApkInfo
 import com.gyh.fileindex.bean.HybridFile
 import com.gyh.fileindex.util.Util
-import java.io.File
 
 class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
     override var data = ArrayList<ApkInfo>()
-    private var converting: AsynchronizedTask<ApkInfo>? = null
+    private var converting: AsynchTask<ApkInfo>? = null
     override lateinit var sortAdapter: SortAdapter<ApkInfo>
 
     override fun updateProgress(vararg files: HybridFile) {
@@ -58,7 +56,7 @@ class ApkListActivity : BaseActivity<ApkInfo>(), Monitor {
                 } else super.compare()
             }
         }
-        converting = AsynchronizedTask({
+        converting = AsynchTask({
             data.add(it[0])
             sortAdapter.sort(data)
             val index = data.indexOf(it[0])

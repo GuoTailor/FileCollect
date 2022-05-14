@@ -8,29 +8,25 @@ import java.util.concurrent.*;
  */
 public class ThreadManager {
     private static final String TAG = "ThreadManager";
-    private final ExecutorService executorService ;
-    private static ThreadManager instance;
-    private static int poolSize = 4;
+    private final ExecutorService executorService;
+    private static int poolSize = Runtime.getRuntime().availableProcessors();
 
     /**
      * 私有化构造函数，使用单列模式
      */
     private ThreadManager() {
         executorService = new ThreadPoolExecutor(poolSize, poolSize, 0L,
-                TimeUnit.MINUTES, new LinkedBlockingQueue<>(128), (run, executor) -> {
+                TimeUnit.MINUTES, new LinkedBlockingQueue<>(), (run, executor) -> {
             if (!executor.isShutdown()) {
-                try {
-                    boolean offer = executor.getQueue().offer(run, 1, TimeUnit.SECONDS);
-                    if (!offer) run.run();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                boolean offer = executor.getQueue().offer(run);
+                if (!offer) run.run();
             }
         });
     }
 
     /**
      * 初始化线程池的大小，默认为4，注意：初始化须在使用之前调用，否则无效
+     *
      * @param poolSize 线程池的大小
      */
     public static void init(int poolSize) {
@@ -41,20 +37,27 @@ public class ThreadManager {
         return executorService;
     }
 
+    private static final class InstanceHolder {
+        static final ThreadManager workPool = new ThreadManager();
+        static final ThreadManager quickPool = new ThreadManager();
+    }
+
     /**
-     * 获取一个实列
+     * 获取一个快速线程池实列，用于处理
      *
      * @return {@link ThreadManager} 的一个实列
      */
-    public static ThreadManager getInstance() {
-        if (instance == null) {
-            synchronized (TAG) {
-                if (instance == null) {
-                    instance = new ThreadManager();
-                }
-            }
-        }
-        return instance;
+    public static ThreadManager getQuickPool() {
+        return InstanceHolder.quickPool;
+    }
+
+    /**
+     * 获取一个工作线程池实列
+     *
+     * @return {@link ThreadManager} 的一个实列
+     */
+    public static ThreadManager getWorkPool() {
+        return InstanceHolder.workPool;
     }
 
     /**

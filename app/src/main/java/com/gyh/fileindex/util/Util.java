@@ -6,7 +6,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.UriPermission;
 import android.content.pm.PackageManager;
@@ -32,7 +31,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
@@ -400,7 +398,7 @@ public class Util {
      * @param activity activity
      */
     public static void showPropertiesDialog(final FileInfo baseFile, Activity activity) {
-        final ThreadManager executor = ThreadManager.getInstance();
+        final ThreadManager executor = ThreadManager.getQuickPool();
 
         final String date = baseFile.getDate();
 
