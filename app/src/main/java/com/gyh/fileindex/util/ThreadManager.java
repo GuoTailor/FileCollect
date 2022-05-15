@@ -16,7 +16,7 @@ public class ThreadManager {
      */
     private ThreadManager() {
         executorService = new ThreadPoolExecutor(poolSize, poolSize, 0L,
-                TimeUnit.MINUTES, new LinkedBlockingQueue<>(), (run, executor) -> {
+                TimeUnit.MINUTES, new LinkedBlockingQueue<>(1024), (run, executor) -> {
             if (!executor.isShutdown()) {
                 boolean offer = executor.getQueue().offer(run);
                 if (!offer) run.run();

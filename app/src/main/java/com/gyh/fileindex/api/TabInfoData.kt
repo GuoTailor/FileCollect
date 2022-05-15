@@ -41,6 +41,11 @@ object TabInfoData {
             AsynchTask.Status.PENDING -> {
                 clean()
                 fileScan?.execute(*allSuffix)
+                AsynchTask.Status.PENDING
+            }
+            AsynchTask.Status.OK -> {
+                clean()
+                fileScan?.execute(*allSuffix)
                 AsynchTask.Status.OK
             }
             else -> AsynchTask.Status.OK
